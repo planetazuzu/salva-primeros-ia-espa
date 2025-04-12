@@ -2,8 +2,8 @@ import { useState } from 'react';
 import Layout from '../components/layout/Layout';
 import { Upload, ChevronRight, CheckCircle, File, Image, Video, FileText, Film, Users, Database } from 'lucide-react';
 import KnowledgeBaseManager from '../components/admin/KnowledgeBaseManager';
+import DashboardOverview from '../components/admin/DashboardOverview';
 
-// Tipos de interfaz para el panel de administración
 interface MediaItem {
   id: string;
   name: string;
@@ -23,12 +23,11 @@ interface FeedbackItem {
 }
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<'media' | 'feedback' | 'training'>('media');
+  const [activeTab, setActiveTab] = useState<'media' | 'feedback' | 'training' | 'dashboard'>('dashboard');
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
-  // Datos de ejemplo para el contenido multimedia
   const mediaItems: MediaItem[] = [
     { id: '1', name: 'Técnica de RCP.mp4', type: 'video', size: '24.5 MB', date: '2023-04-12', category: 'Técnicas' },
     { id: '2', name: 'Guía de primeros auxilios.pdf', type: 'document', size: '3.2 MB', date: '2023-04-10', category: 'Guías' },
@@ -37,7 +36,6 @@ const Admin = () => {
     { id: '5', name: 'Traumatismos.mp4', type: 'video', size: '18.7 MB', date: '2023-03-15', category: 'Primeros auxilios' },
   ];
 
-  // Datos de ejemplo para el feedback de usuarios
   const feedbackItems: FeedbackItem[] = [
     {
       id: '1',
@@ -96,7 +94,6 @@ const Admin = () => {
     
     setUploadStatus('uploading');
     
-    // Simulamos la carga
     setTimeout(() => {
       setUploadStatus('success');
       setTimeout(() => {
@@ -131,10 +128,19 @@ const Admin = () => {
           </p>
         </div>
 
-        {/* Tabs de navegación */}
-        <div className="flex border-b border-gray-200 mb-6">
+        <div className="flex border-b border-gray-200 mb-6 overflow-x-auto">
           <button
-            className={`py-2 px-4 font-medium ${
+            className={`py-2 px-4 font-medium whitespace-nowrap ${
+              activeTab === 'dashboard'
+                ? 'text-auxilio-azul border-b-2 border-auxilio-azul'
+                : 'text-gray-500 hover:text-auxilio-azul'
+            }`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            Dashboard
+          </button>
+          <button
+            className={`py-2 px-4 font-medium whitespace-nowrap ${
               activeTab === 'media'
                 ? 'text-auxilio-azul border-b-2 border-auxilio-azul'
                 : 'text-gray-500 hover:text-auxilio-azul'
@@ -144,7 +150,7 @@ const Admin = () => {
             Contenido Multimedia
           </button>
           <button
-            className={`py-2 px-4 font-medium ${
+            className={`py-2 px-4 font-medium whitespace-nowrap ${
               activeTab === 'feedback'
                 ? 'text-auxilio-azul border-b-2 border-auxilio-azul'
                 : 'text-gray-500 hover:text-auxilio-azul'
@@ -154,7 +160,7 @@ const Admin = () => {
             Feedback de Usuarios
           </button>
           <button
-            className={`py-2 px-4 font-medium ${
+            className={`py-2 px-4 font-medium whitespace-nowrap ${
               activeTab === 'training'
                 ? 'text-auxilio-azul border-b-2 border-auxilio-azul'
                 : 'text-gray-500 hover:text-auxilio-azul'
@@ -165,13 +171,18 @@ const Admin = () => {
           </button>
         </div>
 
-        {/* Contenido de la pestaña activa */}
         <div className="auxilio-card p-6">
+          {activeTab === 'dashboard' && (
+            <div>
+              <h2 className="text-xl font-semibold text-auxilio-azul mb-4">Panel de Control</h2>
+              <DashboardOverview />
+            </div>
+          )}
+
           {activeTab === 'media' && (
             <div>
               <h2 className="text-xl font-semibold text-auxilio-azul mb-4">Gestión de Contenido Multimedia</h2>
               
-              {/* Área de carga de archivos */}
               <div
                 className={`border-2 border-dashed rounded-lg p-6 text-center mb-6 transition-colors ${
                   dragActive 
@@ -244,7 +255,6 @@ const Admin = () => {
                 )}
               </div>
 
-              {/* Lista de archivos */}
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium">Archivos Subidos</h3>
@@ -432,7 +442,6 @@ const Admin = () => {
                 </div>
               </div>
 
-              {/* Gestión de base de conocimientos externa */}
               <div id="knowledge-base-section" className="mt-6">
                 <KnowledgeBaseManager />
               </div>
