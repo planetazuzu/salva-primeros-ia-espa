@@ -11,6 +11,7 @@ import Chatbot from "./pages/Chatbot";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import RCPBasico from "./pages/RCPBasico";
+import Heridas from "./pages/Heridas"; // Añadida nueva importación
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/aprender" element={<Aprender />} />
           <Route path="/aprender/rcp" element={<RCPBasico />} />
+          <Route path="/aprender/heridas" element={<Heridas />} /> {/* Nueva ruta añadida */}
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/admin" element={<Admin />} />

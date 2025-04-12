@@ -4,19 +4,21 @@ import Layout from '../components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { 
-  Heart, 
+  Bandage, 
   AlertTriangle, 
-  Phone, 
-  Clock, 
-  HandMetal, 
+  Scissors, 
+  Droplet, 
   ArrowRight, 
   CheckCircle2, 
   ChevronLeft,
-  Wind
+  Heart,
+  Shield,
+  Hand,
+  Eye
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const RCPBasico = () => {
+const Heridas = () => {
   const [videoPlaying, setVideoPlaying] = useState(false);
 
   return (
@@ -37,38 +39,39 @@ const RCPBasico = () => {
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
               <div className="rounded-full bg-red-100 p-4">
-                <Heart className="h-10 w-10 text-auxilio-rojo" />
+                <Bandage className="h-10 w-10 text-auxilio-rojo" />
               </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-auxilio-azul mb-4">
-              RCP Básico: Aprende a Salvar Vidas
+              Primeros Auxilios para Heridas
             </h1>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              Conoce los fundamentos de la Reanimación Cardiopulmonar y cómo aplicarlos correctamente en situaciones de emergencia.
+              Técnicas para tratar cortes, raspaduras, sangrados y heridas abiertas correctamente.
             </p>
           </div>
 
           {/* Contenido principal */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             <div className="lg:col-span-2">
-              {/* ¿Qué es la RCP? */}
+              {/* ¿Qué es una herida? */}
               <Card className="mb-8 shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <Heart className="h-6 w-6 text-auxilio-rojo mr-2" />
-                    <h2 className="text-2xl font-semibold text-auxilio-azul">¿Qué es la RCP?</h2>
+                    <Bandage className="h-6 w-6 text-auxilio-rojo mr-2" />
+                    <h2 className="text-2xl font-semibold text-auxilio-azul">¿Qué es una herida?</h2>
                   </div>
                   <p className="text-gray-700 mb-4">
-                    La Reanimación Cardiopulmonar (RCP) es una técnica de emergencia que ayuda a mantener la circulación 
-                    de la sangre y la oxigenación del cerebro en personas que han sufrido un paro cardiorespiratorio. 
-                    Aplicada correctamente, la RCP puede marcar la diferencia entre la vida y la muerte hasta que llegue 
-                    la ayuda profesional.
+                    Cuando se presenta una herida—ya sea un corte, raspadura, sangrado o una herida abierta—es 
+                    esencial actuar rápidamente para detener la hemorragia, limpiar la zona y evitar infecciones. 
+                    Estos primeros auxilios pueden marcar la diferencia entre una recuperación rápida y posibles complicaciones.
                   </p>
                   <div className="bg-blue-50 p-4 rounded-lg">
-                    <h3 className="font-medium text-auxilio-azul mb-2">Cuándo Aplicar la RCP:</h3>
+                    <h3 className="font-medium text-auxilio-azul mb-2">Tipos de heridas más comunes:</h3>
                     <ul className="list-disc list-inside text-gray-700 space-y-1">
-                      <li>Cuando una persona ha dejado de responder y no respira con normalidad.</li>
-                      <li>En situaciones de emergencia donde se sospecha un paro cardiaco.</li>
+                      <li>Cortes: Lesiones producidas por objetos afilados que rompen la piel.</li>
+                      <li>Raspaduras: Abrasiones superficiales que afectan la capa externa de la piel.</li>
+                      <li>Punzantes: Causadas por objetos puntiagudos que penetran en la piel.</li>
+                      <li>Contusiones: Causadas por golpes que dañan los tejidos bajo la piel.</li>
                     </ul>
                   </div>
                 </CardContent>
@@ -81,8 +84,8 @@ const RCPBasico = () => {
                     <iframe 
                       width="100%" 
                       height="315" 
-                      src="https://www.youtube.com/embed/FEaOPDrGytI?autoplay=1" 
-                      title="Video tutorial RCP" 
+                      src="https://www.youtube.com/embed/QJoY1EqDpxQ?autoplay=1" 
+                      title="Video tutorial primeros auxilios para heridas" 
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                       allowFullScreen
                       className="absolute inset-0 w-full h-full"
@@ -93,8 +96,8 @@ const RCPBasico = () => {
                       onClick={() => setVideoPlaying(true)}
                     >
                       <img 
-                        src="public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png" 
-                        alt="Miniatura de video RCP" 
+                        src="public/lovable-uploads/1c6800c8-567d-4a6f-ad12-476fecc055e3.png" 
+                        alt="Miniatura de video sobre tratamiento de heridas" 
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
@@ -109,17 +112,17 @@ const RCPBasico = () => {
                 </div>
                 <CardContent className="p-4">
                   <p className="text-sm text-gray-500 text-center">
-                    Video tutorial: Aprende a realizar la RCP correctamente
+                    Video tutorial: Aprende a tratar heridas correctamente
                   </p>
                 </CardContent>
               </Card>
 
-              {/* Pasos básicos para realizar la RCP */}
+              {/* Pasos básicos para el tratamiento de heridas */}
               <Card className="mb-8 shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-6">
                     <CheckCircle2 className="h-6 w-6 text-auxilio-azul mr-2" />
-                    <h2 className="text-2xl font-semibold text-auxilio-azul">Pasos Básicos para Realizar la RCP</h2>
+                    <h2 className="text-2xl font-semibold text-auxilio-azul">Pasos Básicos para el Tratamiento de Heridas</h2>
                   </div>
                   
                   <div className="space-y-8">
@@ -129,17 +132,17 @@ const RCPBasico = () => {
                         1
                       </div>
                       <div>
-                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Verifica la Seguridad y la Respuesta</h3>
+                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Evaluación y Seguridad</h3>
                         <p className="text-gray-700 mb-2">
-                          Asegúrate de que el entorno es seguro para ti y la víctima.
+                          Asegúrate de que el entorno sea seguro y observa la magnitud de la herida.
                         </p>
                         <p className="text-gray-700">
-                          Comprueba si la persona responde a estímulos y si respira normalmente.
+                          Lávate las manos o utiliza guantes si están disponibles para evitar infecciones.
                         </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/dc722280-280d-4315-ba28-776a2b6b2889.png" 
-                            alt="Verificar respuesta del paciente" 
+                            src="public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png" 
+                            alt="Evaluación de la situación" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -152,18 +155,17 @@ const RCPBasico = () => {
                         2
                       </div>
                       <div>
-                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Llama a los Servicios de Emergencia</h3>
+                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Detener el Sangrado</h3>
                         <p className="text-gray-700 mb-2">
-                          Si la persona no responde, pide ayuda de inmediato y solicita asistencia médica.
+                          Coloca una gasa o paño limpio sobre la herida y aplica presión firme para detener el sangrado.
                         </p>
-                        <div className="flex items-center bg-red-50 p-3 rounded-lg mb-3">
-                          <Phone className="h-5 w-5 text-auxilio-rojo mr-2" />
-                          <p className="font-bold text-auxilio-rojo">Número de emergencia en España: 112</p>
-                        </div>
+                        <p className="text-gray-700">
+                          Si es posible, eleva la zona afectada para ayudar a reducir el flujo sanguíneo.
+                        </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/e2e52e18-89b1-4e08-b291-d95ba0905b9c.png" 
-                            alt="Llamar a emergencias" 
+                            src="public/lovable-uploads/dc722280-280d-4315-ba28-776a2b6b2889.png" 
+                            alt="Presión directa sobre herida" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -176,23 +178,23 @@ const RCPBasico = () => {
                         3
                       </div>
                       <div>
-                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Inicia las Compresiones Torácicas</h3>
+                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Limpieza de la Herida</h3>
                         <p className="text-gray-700 mb-3">
-                          Coloca el talón de una mano sobre el centro del pecho y la otra encima, entrelazando los dedos.
+                          Limpia cuidadosamente alrededor de la herida con agua y jabón suave para eliminar suciedad y bacterias.
                         </p>
                         <div className="flex items-center bg-blue-50 p-3 rounded-lg mb-3">
-                          <Clock className="h-5 w-5 text-auxilio-azul mr-2" />
-                          <p className="font-medium text-auxilio-azul">Realiza compresiones firmes y rápidas (aproximadamente 100-120 por minuto).</p>
+                          <Droplet className="h-5 w-5 text-auxilio-azul mr-2" />
+                          <p className="font-medium text-auxilio-azul">Aplica un desinfectante (como solución antiséptica) sobre la herida, siguiendo las indicaciones del producto.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                           <img 
-                            src="public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png" 
-                            alt="Posición de manos para RCP" 
+                            src="public/lovable-uploads/9ea02dac-0c40-4dea-a420-376d6c95e037.png" 
+                            alt="Limpieza de herida" 
                             className="rounded-lg shadow-sm w-full"
                           />
                           <img 
-                            src="public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
-                            alt="Compresiones torácicas" 
+                            src="public/lovable-uploads/1c6800c8-567d-4a6f-ad12-476fecc055e3.png" 
+                            alt="Desinfección de herida" 
                             className="rounded-lg shadow-sm w-full"
                           />
                         </div>
@@ -205,20 +207,17 @@ const RCPBasico = () => {
                         4
                       </div>
                       <div>
-                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Administrar Ventilaciones (opcional)</h3>
+                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Protección y Vendaje</h3>
                         <p className="text-gray-700 mb-2">
-                          Si estás capacitado y es seguro, alterna compresiones con respiraciones de rescate, siguiendo la proporción recomendada.
+                          Utiliza un apósito, vendaje adhesivo o gasa estéril para cubrir la herida y protegerla de agentes externos.
                         </p>
-                        <div className="bg-yellow-50 p-3 rounded-lg mb-3">
-                          <p className="text-amber-800">
-                            <strong>Nota:</strong> Las nuevas recomendaciones priorizan las compresiones torácicas. 
-                            Si no estás seguro o no tienes protección, puedes realizar solo compresiones.
-                          </p>
-                        </div>
+                        <p className="text-gray-700">
+                          Reemplaza el vendaje diariamente o cuando se ensucie, para evitar infecciones.
+                        </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/9ea02dac-0c40-4dea-a420-376d6c95e037.png" 
-                            alt="Respiración boca a boca" 
+                            src="public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
+                            alt="Aplicación de vendaje" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -231,15 +230,18 @@ const RCPBasico = () => {
                         5
                       </div>
                       <div>
-                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Continúa hasta que llegue la ayuda</h3>
+                        <h3 className="text-xl font-medium text-auxilio-azul mb-2">Cuidados Adicionales y Seguimiento</h3>
                         <p className="text-gray-700 mb-2">
-                          Mantén las compresiones y ventilaciones hasta que lleguen los servicios de emergencias 
-                          o la víctima muestre signos de recuperación.
+                          Vigila la herida por signos de infección (enrojecimiento, hinchazón, calor o secreción).
+                        </p>
+                        <p className="text-gray-700">
+                          Si la herida es profunda, no se detiene el sangrado o presenta señales de infección, 
+                          busca atención médica inmediatamente.
                         </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png" 
-                            alt="Uso del DEA" 
+                            src="public/lovable-uploads/e2e52e18-89b1-4e08-b291-d95ba0905b9c.png" 
+                            alt="Vigilancia de señales de infección" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -251,12 +253,12 @@ const RCPBasico = () => {
             </div>
             
             <div className="lg:col-span-1">
-              {/* Precauciones importantes */}
+              {/* Cuándo buscar ayuda médica */}
               <Card className="mb-8 shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     <AlertTriangle className="h-6 w-6 text-amber-500 mr-2" />
-                    <h2 className="text-xl font-semibold text-auxilio-azul">Precauciones Importantes</h2>
+                    <h2 className="text-xl font-semibold text-auxilio-azul">Cuándo Buscar Ayuda Médica</h2>
                   </div>
                   <ul className="space-y-4">
                     <li className="flex">
@@ -264,7 +266,7 @@ const RCPBasico = () => {
                         <CheckCircle2 className="h-4 w-4 text-amber-600" />
                       </div>
                       <p className="text-gray-700">
-                        <strong>No abandonar a la víctima:</strong> Permanece con ella y sigue aplicando la RCP hasta que llegue ayuda profesional o la persona recupere la conciencia.
+                        <strong>Heridas profundas:</strong> Si la herida es profunda, llegando a tejidos más allá de la piel.
                       </p>
                     </li>
                     <li className="flex">
@@ -272,7 +274,7 @@ const RCPBasico = () => {
                         <CheckCircle2 className="h-4 w-4 text-amber-600" />
                       </div>
                       <p className="text-gray-700">
-                        <strong>Capacitación:</strong> Es altamente recomendable realizar cursos de primeros auxilios para conocer la técnica correctamente.
+                        <strong>Sangrado abundante:</strong> Si no se puede detener el sangrado tras aplicar presión durante 15 minutos.
                       </p>
                     </li>
                     <li className="flex">
@@ -280,43 +282,46 @@ const RCPBasico = () => {
                         <CheckCircle2 className="h-4 w-4 text-amber-600" />
                       </div>
                       <p className="text-gray-700">
-                        <strong>Uso de Desfibriladores:</strong> Si hay un desfibrilador externo automático (DEA) disponible, sigue las indicaciones del dispositivo.
+                        <strong>Objetos incrustados:</strong> Si hay objetos clavados en la herida, no intentes extraerlos.
+                      </p>
+                    </li>
+                    <li className="flex">
+                      <div className="rounded-full bg-amber-100 p-1 mr-3 flex-shrink-0">
+                        <CheckCircle2 className="h-4 w-4 text-amber-600" />
+                      </div>
+                      <p className="text-gray-700">
+                        <strong>Signos de infección:</strong> Enrojecimiento, hinchazón, aumento de temperatura, pus o dolor intenso.
                       </p>
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              {/* Diagrama de posicionamiento */}
+              {/* Recomendaciones generales */}
               <Card className="mb-8 shadow-md">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold text-auxilio-azul mb-4">
-                    Posicionamiento Correcto de Manos
+                    Recomendaciones Generales
                   </h3>
                   <div className="bg-blue-50 p-4 rounded-lg">
-                    <img 
-                      src="public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png" 
-                      alt="Diagrama de posicionamiento de manos" 
-                      className="rounded-lg w-full mb-3"
-                    />
-                    <ul className="text-sm text-gray-700 space-y-2">
+                    <ul className="text-gray-700 space-y-3">
                       <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          1
+                        <div className="rounded-full bg-blue-200 p-1 mr-3 flex-shrink-0 mt-0.5">
+                          <Hand className="h-4 w-4 text-auxilio-azul" />
                         </div>
-                        <p>Coloca el talón de una mano en el centro del pecho (sobre el esternón).</p>
+                        <p><strong>No manipular excesivamente:</strong> Evita tocar o raspar la herida una vez vendada para no agravarla.</p>
                       </li>
                       <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          2
+                        <div className="rounded-full bg-blue-200 p-1 mr-3 flex-shrink-0 mt-0.5">
+                          <Shield className="h-4 w-4 text-auxilio-azul" />
                         </div>
-                        <p>Coloca la otra mano encima, entrelazando los dedos.</p>
+                        <p><strong>Mantén la calma:</strong> Actuar con serenidad te ayudará a seguir adecuadamente cada paso.</p>
                       </li>
                       <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          3
+                        <div className="rounded-full bg-blue-200 p-1 mr-3 flex-shrink-0 mt-0.5">
+                          <Eye className="h-4 w-4 text-auxilio-azul" />
                         </div>
-                        <p>Mantén los brazos rectos y comprime verticalmente.</p>
+                        <p><strong>Observación constante:</strong> Revisa la herida periódicamente para detectar cambios o complicaciones.</p>
                       </li>
                     </ul>
                   </div>
@@ -332,33 +337,34 @@ const RCPBasico = () => {
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-1">
                       <AccordionTrigger className="text-left">
-                        ¿Puedo hacer daño al realizar RCP?
+                        ¿Puedo usar alcohol para desinfectar heridas?
                       </AccordionTrigger>
                       <AccordionContent>
-                        Es normal preocuparse por causar daño, pero recuerda que la persona ya está en una situación crítica. 
-                        Algunas costillas pueden fracturarse durante las compresiones, pero esto es preferible a no actuar. 
-                        Un paro cardíaco sin atención tiene consecuencias mucho más graves.
+                        No es recomendable usar alcohol directamente sobre heridas abiertas ya que puede dañar 
+                        el tejido y retrasar la cicatrización. Es preferible usar antisépticos específicos como 
+                        la povidona yodada o el agua oxigenada diluida. Consulta con un profesional de la salud 
+                        para saber qué producto es el más adecuado.
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-2">
                       <AccordionTrigger className="text-left">
-                        ¿Cómo sé si estoy haciendo las compresiones correctamente?
+                        ¿Cómo sé si una herida necesita puntos?
                       </AccordionTrigger>
                       <AccordionContent>
-                        Las compresiones deben ser firmes y profundas (unos 5-6 cm en adultos), permitiendo 
-                        que el pecho vuelva a su posición después de cada compresión. El ritmo debe ser entre 
-                        100-120 compresiones por minuto, similar al ritmo de la canción "Stayin' Alive" de los Bee Gees.
+                        Una herida probablemente necesita puntos si: es más profunda que superficial, 
+                        tiene bordes que no se juntan fácilmente, sigue sangrando después de aplicar presión, 
+                        es larga (más de 1-2 cm), está ubicada en una zona de mucho movimiento o en el rostro, 
+                        o fue causada por un objeto sucio o oxidado. Ante la duda, siempre consulta con un médico.
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-3">
                       <AccordionTrigger className="text-left">
-                        ¿Qué hago si hay un DEA (desfibrilador) disponible?
+                        ¿Qué debo hacer si encuentro un objeto incrustado en la herida?
                       </AccordionTrigger>
                       <AccordionContent>
-                        Si hay un DEA disponible, úsalo lo antes posible. Los DEA modernos tienen instrucciones 
-                        por voz y son fáciles de usar. Enciende el dispositivo, sigue las instrucciones para 
-                        colocar los parches en el pecho de la víctima y deja que el DEA analice el ritmo cardíaco. 
-                        Si recomienda una descarga, asegúrate de que nadie toque a la víctima y presiona el botón de descarga.
+                        No intentes extraer el objeto incrustado. Podría estar haciendo presión sobre vasos sanguíneos 
+                        y su extracción podría causar una hemorragia mayor. Estabiliza el objeto utilizando vendajes 
+                        o gasas a su alrededor para evitar que se mueva y busca atención médica de inmediato.
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -369,10 +375,10 @@ const RCPBasico = () => {
 
           {/* Llamado a la acción */}
           <div className="bg-auxilio-azul text-white rounded-lg p-6 mb-12 text-center">
-            <h2 className="text-2xl font-bold mb-3">¡Tu actuación puede salvar una vida!</h2>
+            <h2 className="text-2xl font-bold mb-3">¡El tratamiento adecuado puede prevenir complicaciones!</h2>
             <p className="mb-6 max-w-2xl mx-auto">
-              Recuerda que la rapidez y la correcta aplicación de la RCP puede marcar la diferencia 
-              entre la vida y la muerte. Comparte estos conocimientos con amigos y familiares.
+              Recuerda que un correcto tratamiento de heridas puede prevenir infecciones y favorecer una pronta recuperación. 
+              Comparte estos conocimientos con amigos y familiares.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/quiz" className="px-6 py-3 bg-white text-auxilio-azul font-medium rounded-md hover:bg-gray-100 transition-colors">
@@ -382,8 +388,8 @@ const RCPBasico = () => {
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
-                      title: 'RCP Básico: Aprende a Salvar Vidas',
-                      text: 'Aprende los fundamentos de la RCP y cómo salvar vidas en situaciones de emergencia',
+                      title: 'Primeros Auxilios para Heridas',
+                      text: 'Aprende las técnicas correctas para tratar heridas y evitar complicaciones',
                       url: window.location.href,
                     });
                   }
@@ -399,26 +405,26 @@ const RCPBasico = () => {
           <div>
             <h3 className="text-xl font-semibold text-auxilio-azul mb-6">Contenido relacionado</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link to="/aprender/emergencias-cardiacas" className="auxilio-card p-5 hover:shadow-md transition-shadow duration-300 flex flex-col">
+              <Link to="/aprender/quemaduras" className="auxilio-card p-5 hover:shadow-md transition-shadow duration-300 flex flex-col">
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-blue-50 p-2 mr-3 text-auxilio-azul">
-                    <Heart className="h-5 w-5" />
+                    <Droplet className="h-5 w-5" />
                   </div>
-                  <h4 className="font-semibold text-auxilio-azul">Emergencias Cardíacas</h4>
+                  <h4 className="font-semibold text-auxilio-azul">Atención a Quemaduras</h4>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">Reconocimiento y actuación ante infartos y otras emergencias cardíacas.</p>
+                <p className="text-gray-600 text-sm mb-4">Clasificación de quemaduras y procedimientos correctos para su tratamiento inicial.</p>
                 <span className="flex items-center text-auxilio-azul hover:text-blue-700 text-sm font-medium mt-auto">
                   Ver más <ArrowRight className="ml-1 h-4 w-4" />
                 </span>
               </Link>
-              <Link to="/aprender/atragantamiento" className="auxilio-card p-5 hover:shadow-md transition-shadow duration-300 flex flex-col">
+              <Link to="/aprender/rcp" className="auxilio-card p-5 hover:shadow-md transition-shadow duration-300 flex flex-col">
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-blue-50 p-2 mr-3 text-auxilio-azul">
-                    <Wind className="h-5 w-5" />
+                    <Heart className="h-5 w-5" />
                   </div>
-                  <h4 className="font-semibold text-auxilio-azul">Atragantamiento</h4>
+                  <h4 className="font-semibold text-auxilio-azul">RCP Básico</h4>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">Aprende la maniobra de Heimlich y cómo actuar ante un atragantamiento.</p>
+                <p className="text-gray-600 text-sm mb-4">Aprende las técnicas de reanimación cardiopulmonar para adultos, niños y bebés.</p>
                 <span className="flex items-center text-auxilio-azul hover:text-blue-700 text-sm font-medium mt-auto">
                   Ver más <ArrowRight className="ml-1 h-4 w-4" />
                 </span>
@@ -443,4 +449,4 @@ const RCPBasico = () => {
   );
 };
 
-export default RCPBasico;
+export default Heridas;
