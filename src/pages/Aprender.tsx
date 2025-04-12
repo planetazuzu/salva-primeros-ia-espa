@@ -1,8 +1,19 @@
-
 import Layout from '../components/layout/Layout';
 import LearningCard from '../components/learn/LearningCard';
 import { Search } from 'lucide-react';
-import { Heart, Activity, Thermometer, Bandage, AlertTriangle, Brain, BookOpen } from 'lucide-react';
+import { 
+  Heart, 
+  Activity, 
+  Thermometer, 
+  Bandage, 
+  AlertTriangle, 
+  Brain, 
+  BookOpen,
+  Flame,
+  Lungs,
+  Bone,
+  FirstAid
+} from 'lucide-react';
 
 const Aprender = () => {
   const categoriasEmergencia = [
@@ -26,7 +37,7 @@ const Aprender = () => {
       id: 3,
       title: "Atención a Quemaduras",
       description: "Clasificación de quemaduras y procedimientos correctos para su tratamiento inicial.",
-      icon: <Thermometer className="h-5 w-5 text-auxilio-azul" />,
+      icon: <Flame className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/quemaduras",
       imageUrl: "public/lovable-uploads/9ea02dac-0c40-4dea-a420-376d6c95e037.png"
     },
@@ -50,7 +61,7 @@ const Aprender = () => {
       id: 6,
       title: "Traumatismos y Fracturas",
       description: "Cómo identificar y manejar fracturas, esguinces y traumatismos.",
-      icon: <Bandage className="h-5 w-5 text-auxilio-azul" />,
+      icon: <Bone className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/traumatismos",
       imageUrl: "public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png"
     },
@@ -58,7 +69,7 @@ const Aprender = () => {
       id: 7,
       title: "Botiquín de Emergencia",
       description: "Elementos esenciales que debe contener un botiquín de primeros auxilios.",
-      icon: <AlertTriangle className="h-5 w-5 text-auxilio-azul" />,
+      icon: <FirstAid className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/botiquin",
       imageUrl: "public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png"
     },
