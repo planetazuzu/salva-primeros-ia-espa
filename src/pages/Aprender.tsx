@@ -1,3 +1,4 @@
+
 import Layout from '../components/layout/Layout';
 import LearningCard from '../components/learn/LearningCard';
 import { Search } from 'lucide-react';
@@ -10,9 +11,9 @@ import {
   Brain, 
   BookOpen,
   Flame,
-  Lungs,
+  Wind, // Reemplazando Lungs por Wind para representar la respiración/pulmones
   Bone,
-  FirstAid
+  FirstAidKit // Reemplazando FirstAid por FirstAidKit
 } from 'lucide-react';
 
 const Aprender = () => {
@@ -69,7 +70,7 @@ const Aprender = () => {
       id: 7,
       title: "Botiquín de Emergencia",
       description: "Elementos esenciales que debe contener un botiquín de primeros auxilios.",
-      icon: <FirstAid className="h-5 w-5 text-auxilio-azul" />,
+      icon: <FirstAidKit className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/botiquin",
       imageUrl: "public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png"
     },
