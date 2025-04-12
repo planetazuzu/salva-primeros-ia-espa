@@ -1,5 +1,6 @@
 
 import { Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -15,10 +16,10 @@ const Footer = () => {
             <p className="mt-1">Diseñado para enseñar y salvar vidas</p>
           </div>
           <div className="mt-4 md:mt-0">
-            <ul className="flex space-x-4">
-              <li><a href="#" className="text-gray-200 hover:text-white">Acerca de</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white">Política de privacidad</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white">Contacto</a></li>
+            <ul className="flex flex-wrap space-x-4">
+              <li><Link to="/acerca-de" className="text-gray-200 hover:text-white">Acerca de</Link></li>
+              <li><Link to="/politicas-privacidad" className="text-gray-200 hover:text-white">Política de privacidad</Link></li>
+              <li><Link to="/contacto" className="text-gray-200 hover:text-white">Contacto</Link></li>
             </ul>
           </div>
         </div>

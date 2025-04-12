@@ -17,6 +17,9 @@ import Atragantamiento from "./pages/Atragantamiento";
 import EmergenciasCardiacas from "./pages/EmergenciasCardiacas";
 import Traumatismos from "./pages/Traumatismos";
 import Botiquin from "./pages/Botiquin";
+import PoliticasPrivacidad from "./pages/PoliticasPrivacidad";
+import AcercaDe from "./pages/AcercaDe";
+import Contacto from "./pages/Contacto";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +42,9 @@ const App = () => (
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/politicas-privacidad" element={<PoliticasPrivacidad />} />
+          <Route path="/acerca-de" element={<AcercaDe />} />
+          <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
