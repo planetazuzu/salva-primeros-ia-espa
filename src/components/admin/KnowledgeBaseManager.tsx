@@ -1,19 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Database, Upload, X, Check, FileText, RefreshCw, AlertCircle } from 'lucide-react';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from "@/components/ui/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Database as DatabaseType } from '@/integrations/supabase/types';
 
-interface KnowledgeSource {
-  id: string;
-  name: string;
-  url: string;
-  active: boolean;
-  last_synced?: string;
-  created_at?: string;
-  updated_at?: string;
-}
+type KnowledgeSource = DatabaseType['public']['Tables']['knowledge_sources']['Row'];
 
 const KnowledgeBaseManager = () => {
   const [newSource, setNewSource] = useState({ name: '', url: '' });
@@ -30,7 +22,7 @@ const KnowledgeBaseManager = () => {
     queryKey: ['knowledgeSources'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('knowledge_sources' as any)
+        .from('knowledge_sources')
         .select('*')
         .order('created_at', { ascending: false });
       
@@ -47,7 +39,7 @@ const KnowledgeBaseManager = () => {
   const addSourceMutation = useMutation({
     mutationFn: async (source: Omit<KnowledgeSource, 'id'>) => {
       const { data, error } = await supabase
-        .from('knowledge_sources' as any)
+        .from('knowledge_sources')
         .insert({
           name: source.name,
           url: source.url,
@@ -85,7 +77,7 @@ const KnowledgeBaseManager = () => {
   const removeSourceMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('knowledge_sources' as any)
+        .from('knowledge_sources')
         .delete()
         .eq('id', id);
       
@@ -119,7 +111,7 @@ const KnowledgeBaseManager = () => {
   const toggleSourceMutation = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
       const { data, error } = await supabase
-        .from('knowledge_sources' as any)
+        .from('knowledge_sources')
         .update({ active })
         .eq('id', id)
         .select()
@@ -163,7 +155,7 @@ const KnowledgeBaseManager = () => {
         
         // Update the last_synced timestamp
         const { data, error } = await supabase
-          .from('knowledge_sources' as any)
+          .from('knowledge_sources')
           .update({ 
             last_synced: new Date().toISOString() 
           })
