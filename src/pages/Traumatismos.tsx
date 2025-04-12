@@ -78,6 +78,13 @@ const Traumatismos = () => {
                       <li>Compara con la extremidad opuesta si es posible.</li>
                       <li>No fuerces el movimiento si hay dolor intenso.</li>
                     </ul>
+                    <div className="mt-4">
+                      <img 
+                        src="public/lovable-uploads/1c6800c8-567d-4a6f-ad12-476fecc055e3.png" 
+                        alt="Evaluación de traumatismo" 
+                        className="rounded-lg shadow-sm max-w-md mx-auto"
+                      />
+                    </div>
                   </CardContent>
                 </Card>
                 
@@ -89,6 +96,13 @@ const Traumatismos = () => {
                       <li>Asegura la férula por encima y debajo de la lesión, sin apretar demasiado.</li>
                       <li>Mantén las articulaciones adyacentes inmovilizadas.</li>
                     </ul>
+                    <div className="mt-4">
+                      <img 
+                        src="public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
+                        alt="Inmovilización de fractura" 
+                        className="rounded-lg shadow-sm max-w-md mx-auto"
+                      />
+                    </div>
                   </CardContent>
                 </Card>
                 
@@ -179,7 +193,7 @@ const Traumatismos = () => {
                 <div className="space-y-4">
                   <div>
                     <img 
-                      src="/public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
+                      src="public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
                       alt="Inmovilización de fracturas" 
                       className="w-full rounded-lg mb-2"
                     />

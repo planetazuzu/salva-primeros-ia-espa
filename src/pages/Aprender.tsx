@@ -24,7 +24,7 @@ const Aprender = () => {
       description: "Aprende las técnicas de reanimación cardiopulmonar para adultos, niños y bebés.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/rcp",
-      imageUrl: "public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png"
+      imageUrl: "public/lovable-uploads/765c523d-5917-482d-a8fe-1869117dd1dd.png"
     },
     {
       id: 2,
@@ -48,7 +48,7 @@ const Aprender = () => {
       description: "Aprende la maniobra de Heimlich y cómo actuar ante un atragantamiento.",
       icon: <Activity className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/atragantamiento",
-      imageUrl: "public/lovable-uploads/e2e52e18-89b1-4e08-b291-d95ba0905b9c.png"
+      imageUrl: "public/lovable-uploads/0fa83f2b-be10-447c-81e3-ba5f35aaf9d2.png"
     },
     {
       id: 5,
@@ -56,7 +56,7 @@ const Aprender = () => {
       description: "Reconocimiento y actuación ante infartos y otras emergencias cardíacas.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/emergencias-cardiacas",
-      imageUrl: "public/lovable-uploads/dc722280-280d-4315-ba28-776a2b6b2889.png"
+      imageUrl: "public/lovable-uploads/24ac627f-b4a4-4141-9999-71bc44ae7df0.png"
     },
     {
       id: 6,

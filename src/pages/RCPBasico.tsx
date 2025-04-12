@@ -74,6 +74,37 @@ const RCPBasico = () => {
                 </CardContent>
               </Card>
 
+              {/* Infografía de RCP */}
+              <Card className="mb-8 shadow-md">
+                <CardContent className="p-6">
+                  <h2 className="text-2xl font-semibold text-auxilio-azul mb-4">Infografía del Procedimiento</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <img 
+                      src="public/lovable-uploads/cee0c8fc-f326-4d28-a16e-37b75546f9c3.png" 
+                      alt="Pasos del procedimiento de RCP" 
+                      className="rounded-lg shadow-sm w-full"
+                    />
+                    <img 
+                      src="public/lovable-uploads/17b62696-9be1-4206-b042-377e9ace3dec.png" 
+                      alt="Posición de manos para RCP" 
+                      className="rounded-lg shadow-sm w-full"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <img 
+                      src="public/lovable-uploads/00ffee74-5121-4d1b-a76a-9aca46e82be7.png" 
+                      alt="Protocolo completo de reanimación" 
+                      className="rounded-lg shadow-sm w-full"
+                    />
+                    <img 
+                      src="public/lovable-uploads/97b9846a-fbfa-4b66-9fe4-d4354331db09.png" 
+                      alt="RCP: Reanimación cardiopulmonar" 
+                      className="rounded-lg shadow-sm w-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Video o animación */}
               <Card className="mb-8 shadow-md overflow-hidden">
                 <div className="aspect-w-16 aspect-h-9 relative bg-gray-100">
@@ -138,7 +169,7 @@ const RCPBasico = () => {
                         </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/dc722280-280d-4315-ba28-776a2b6b2889.png" 
+                            src="public/lovable-uploads/c03ef8f0-debc-4d4a-82b9-f87b87fad2f5.png" 
                             alt="Verificar respuesta del paciente" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
@@ -162,8 +193,8 @@ const RCPBasico = () => {
                         </div>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/e2e52e18-89b1-4e08-b291-d95ba0905b9c.png" 
-                            alt="Llamar a emergencias" 
+                            src="public/lovable-uploads/0fa83f2b-be10-447c-81e3-ba5f35aaf9d2.png" 
+                            alt="Procedimiento de emergencia" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -186,14 +217,21 @@ const RCPBasico = () => {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                           <img 
-                            src="public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png" 
+                            src="public/lovable-uploads/765c523d-5917-482d-a8fe-1869117dd1dd.png" 
                             alt="Posición de manos para RCP" 
                             className="rounded-lg shadow-sm w-full"
                           />
                           <img 
-                            src="public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png" 
+                            src="public/lovable-uploads/24ac627f-b4a4-4141-9999-71bc44ae7df0.png" 
                             alt="Compresiones torácicas" 
                             className="rounded-lg shadow-sm w-full"
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <img 
+                            src="public/lovable-uploads/4c606029-8fe6-4b32-ba0d-7e5b9916955b.png" 
+                            alt="Posición correcta para las compresiones" 
+                            className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
                       </div>
@@ -217,8 +255,8 @@ const RCPBasico = () => {
                         </div>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/9ea02dac-0c40-4dea-a420-376d6c95e037.png" 
-                            alt="Respiración boca a boca" 
+                            src="public/lovable-uploads/ca3f8f78-905b-4e0a-9606-19b7ade292cb.png" 
+                            alt="Técnica de ventilación" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
                         </div>
@@ -238,7 +276,7 @@ const RCPBasico = () => {
                         </p>
                         <div className="mt-3">
                           <img 
-                            src="public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png" 
+                            src="public/lovable-uploads/1e204432-6bdb-407b-880c-2527fde044af.png" 
                             alt="Uso del DEA" 
                             className="rounded-lg shadow-sm w-full max-w-lg mx-auto"
                           />
@@ -251,6 +289,70 @@ const RCPBasico = () => {
             </div>
             
             <div className="lg:col-span-1">
+              {/* Posicionamiento de manos */}
+              <Card className="mb-8 shadow-md">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-auxilio-azul mb-4">
+                    Posicionamiento Correcto de Manos
+                  </h3>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <img 
+                      src="public/lovable-uploads/ca3f8f78-905b-4e0a-9606-19b7ade292cb.png" 
+                      alt="Posición de manos para RCP" 
+                      className="rounded-lg w-full mb-3"
+                    />
+                    <ul className="text-sm text-gray-700 space-y-2">
+                      <li className="flex items-start">
+                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+                          1
+                        </div>
+                        <p>Coloca el talón de una mano en el centro del pecho (sobre el esternón).</p>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+                          2
+                        </div>
+                        <p>Coloca la otra mano encima, entrelazando los dedos.</p>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+                          3
+                        </div>
+                        <p>Mantén los brazos rectos y comprime verticalmente.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Diferencias según edad */}
+              <Card className="mb-8 shadow-md">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-auxilio-azul mb-4">
+                    RCP según la edad de la víctima
+                  </h3>
+                  <img 
+                    src="public/lovable-uploads/ca3f8f78-905b-4e0a-9606-19b7ade292cb.png" 
+                    alt="Posición de manos según edad" 
+                    className="rounded-lg w-full mb-4"
+                  />
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <h4 className="font-medium text-auxilio-azul">Adultos:</h4>
+                      <p className="text-sm text-gray-700">Utiliza ambas manos, una sobre otra, con los dedos entrelazados.</p>
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <h4 className="font-medium text-auxilio-azul">Niños (1-8 años):</h4>
+                      <p className="text-sm text-gray-700">Utiliza el talón de una mano o dos manos si es necesario.</p>
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <h4 className="font-medium text-auxilio-azul">Bebés (menores de 1 año):</h4>
+                      <p className="text-sm text-gray-700">Utiliza dos o tres dedos en el centro del pecho.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Precauciones importantes */}
               <Card className="mb-8 shadow-md">
                 <CardContent className="p-6">
@@ -284,42 +386,6 @@ const RCPBasico = () => {
                       </p>
                     </li>
                   </ul>
-                </CardContent>
-              </Card>
-
-              {/* Diagrama de posicionamiento */}
-              <Card className="mb-8 shadow-md">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-auxilio-azul mb-4">
-                    Posicionamiento Correcto de Manos
-                  </h3>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <img 
-                      src="public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png" 
-                      alt="Diagrama de posicionamiento de manos" 
-                      className="rounded-lg w-full mb-3"
-                    />
-                    <ul className="text-sm text-gray-700 space-y-2">
-                      <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          1
-                        </div>
-                        <p>Coloca el talón de una mano en el centro del pecho (sobre el esternón).</p>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          2
-                        </div>
-                        <p>Coloca la otra mano encima, entrelazando los dedos.</p>
-                      </li>
-                      <li className="flex items-start">
-                        <div className="rounded-full bg-blue-200 text-auxilio-azul font-bold h-5 w-5 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                          3
-                        </div>
-                        <p>Mantén los brazos rectos y comprime verticalmente.</p>
-                      </li>
-                    </ul>
-                  </div>
                 </CardContent>
               </Card>
 
