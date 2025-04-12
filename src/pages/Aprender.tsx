@@ -13,7 +13,7 @@ import {
   Flame,
   Wind, // Reemplazando Lungs por Wind para representar la respiración/pulmones
   Bone,
-  FirstAidKit // Reemplazando FirstAid por FirstAidKit
+  Package // Reemplazando FirstAidKit por Package para representar el botiquín
 } from 'lucide-react';
 
 const Aprender = () => {
@@ -70,7 +70,7 @@ const Aprender = () => {
       id: 7,
       title: "Botiquín de Emergencia",
       description: "Elementos esenciales que debe contener un botiquín de primeros auxilios.",
-      icon: <FirstAidKit className="h-5 w-5 text-auxilio-azul" />,
+      icon: <Package className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/botiquin",
       imageUrl: "public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png"
     },
