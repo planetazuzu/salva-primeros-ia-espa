@@ -30,7 +30,7 @@ const KnowledgeBaseManager = () => {
     queryKey: ['knowledgeSources'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('knowledge_sources')
+        .from('knowledge_sources' as any)
         .select('*')
         .order('created_at', { ascending: false });
       
@@ -47,7 +47,7 @@ const KnowledgeBaseManager = () => {
   const addSourceMutation = useMutation({
     mutationFn: async (source: Omit<KnowledgeSource, 'id'>) => {
       const { data, error } = await supabase
-        .from('knowledge_sources')
+        .from('knowledge_sources' as any)
         .insert({
           name: source.name,
           url: source.url,
@@ -85,7 +85,7 @@ const KnowledgeBaseManager = () => {
   const removeSourceMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('knowledge_sources')
+        .from('knowledge_sources' as any)
         .delete()
         .eq('id', id);
       
@@ -119,7 +119,7 @@ const KnowledgeBaseManager = () => {
   const toggleSourceMutation = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
       const { data, error } = await supabase
-        .from('knowledge_sources')
+        .from('knowledge_sources' as any)
         .update({ active })
         .eq('id', id)
         .select()
@@ -163,7 +163,7 @@ const KnowledgeBaseManager = () => {
         
         // Update the last_synced timestamp
         const { data, error } = await supabase
-          .from('knowledge_sources')
+          .from('knowledge_sources' as any)
           .update({ 
             last_synced: new Date().toISOString() 
           })

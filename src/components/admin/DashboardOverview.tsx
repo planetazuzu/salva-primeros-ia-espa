@@ -13,6 +13,16 @@ interface Stats {
   lastTrainingDate: string;
 }
 
+interface KnowledgeSource {
+  id: string;
+  name: string;
+  url: string;
+  active: boolean;
+  last_synced?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 const DashboardOverview = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['adminStats'],
@@ -21,9 +31,9 @@ const DashboardOverview = () => {
       // For now, we'll simulate the data with some mocked values and
       // the actual count of knowledge sources
       
-      // Get knowledge sources count
+      // Get knowledge sources count - bypassing type checking with 'as any'
       const { data: knowledgeSources, error: ksError } = await supabase
-        .from('knowledge_sources')
+        .from('knowledge_sources' as any)
         .select('*');
         
       if (ksError) {
@@ -31,7 +41,7 @@ const DashboardOverview = () => {
         throw ksError;
       }
       
-      const activeKnowledgeSources = knowledgeSources.filter(source => source.active).length;
+      const activeKnowledgeSources = (knowledgeSources as KnowledgeSource[]).filter(source => source.active).length;
       
       // Mock other stats
       return {
