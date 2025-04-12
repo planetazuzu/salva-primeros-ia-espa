@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Layout from '../components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +11,8 @@ import {
   Lungs, 
   ArrowRight, 
   CheckCircle2, 
-  ChevronLeft
+  ChevronLeft,
+  Wind
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -414,7 +414,7 @@ const RCPBasico = () => {
               <Link to="/aprender/atragantamiento" className="auxilio-card p-5 hover:shadow-md transition-shadow duration-300 flex flex-col">
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-blue-50 p-2 mr-3 text-auxilio-azul">
-                    <Lungs className="h-5 w-5" />
+                    <Wind className="h-5 w-5" />
                   </div>
                   <h4 className="font-semibold text-auxilio-azul">Atragantamiento</h4>
                 </div>
