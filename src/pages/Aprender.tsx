@@ -12,7 +12,7 @@ const Aprender = () => {
       description: "Aprende las técnicas de reanimación cardiopulmonar para adultos, niños y bebés.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/rcp",
-      imageUrl: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?q=80&w=2070&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/7c7f64ea-28a9-4a47-a89f-ffb9d33a98dd.png"
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ const Aprender = () => {
       description: "Técnicas para tratar cortes, raspaduras, sangrados y heridas abiertas correctamente.",
       icon: <Bandage className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/heridas",
-      imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=2080&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/1c6800c8-567d-4a6f-ad12-476fecc055e3.png"
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ const Aprender = () => {
       description: "Clasificación de quemaduras y procedimientos correctos para su tratamiento inicial.",
       icon: <Thermometer className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/quemaduras",
-      imageUrl: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1932&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/9ea02dac-0c40-4dea-a420-376d6c95e037.png"
     },
     {
       id: 4,
@@ -36,7 +36,7 @@ const Aprender = () => {
       description: "Aprende la maniobra de Heimlich y cómo actuar ante un atragantamiento.",
       icon: <Activity className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/atragantamiento",
-      imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/e2e52e18-89b1-4e08-b291-d95ba0905b9c.png"
     },
     {
       id: 5,
@@ -44,7 +44,7 @@ const Aprender = () => {
       description: "Reconocimiento y actuación ante infartos y otras emergencias cardíacas.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/emergencias-cardiacas",
-      imageUrl: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=2070&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/dc722280-280d-4315-ba28-776a2b6b2889.png"
     },
     {
       id: 6,
@@ -52,7 +52,15 @@ const Aprender = () => {
       description: "Cómo identificar y manejar fracturas, esguinces y traumatismos.",
       icon: <Bandage className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/traumatismos",
-      imageUrl: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=2070&auto=format&fit=crop"
+      imageUrl: "public/lovable-uploads/91b89e50-16c3-4c98-b415-12d66df00536.png"
+    },
+    {
+      id: 7,
+      title: "Botiquín de Emergencia",
+      description: "Elementos esenciales que debe contener un botiquín de primeros auxilios.",
+      icon: <AlertTriangle className="h-5 w-5 text-auxilio-azul" />,
+      linkTo: "/aprender/botiquin",
+      imageUrl: "public/lovable-uploads/9752b215-ce2b-4cb6-95c7-25daeb51305a.png"
     },
   ];
 
