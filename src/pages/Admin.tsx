@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import Layout from '../components/layout/Layout';
 import { Upload, ChevronRight, CheckCircle, File, Image, Video, FileText, Film, Users, Database } from 'lucide-react';
+import KnowledgeBaseManager from '../components/admin/KnowledgeBaseManager';
 
 // Tipos de interfaz para el panel de administración
 interface MediaItem {
@@ -381,7 +381,7 @@ const Admin = () => {
                     </div>
                     <div>
                       <p className="font-medium">Modelo activo</p>
-                      <p className="text-sm text-gray-500">Última actualización: 2023-04-10</p>
+                      <p className="text-sm text-gray-500">Última actualización: {new Date().toISOString().split('T')[0]}</p>
                     </div>
                   </div>
                   <div className="mb-4">
@@ -423,8 +423,18 @@ const Admin = () => {
                       <span className="text-sm bg-gray-100 text-gray-800 py-0.5 px-2 rounded">Inactivo</span>
                     </li>
                   </ul>
-                  <button className="auxilio-btn-secondary w-full">Configurar fuentes</button>
+                  <button 
+                    className="auxilio-btn-secondary w-full"
+                    onClick={() => document.getElementById('knowledge-base-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    Configurar fuentes
+                  </button>
                 </div>
+              </div>
+
+              {/* Gestión de base de conocimientos externa */}
+              <div id="knowledge-base-section" className="mt-6">
+                <KnowledgeBaseManager />
               </div>
 
               <div className="mt-6 border rounded-lg p-4">
@@ -443,8 +453,8 @@ const Admin = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       <tr className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-2023-04-10</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2023-04-10</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-{new Date().getFullYear()}-{String(new Date().getMonth() + 1).padStart(2, '0')}-{String(new Date().getDate()).padStart(2, '0')}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{new Date().toISOString().split('T')[0]}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2h 15m</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Completado</span>
@@ -455,8 +465,8 @@ const Admin = () => {
                         </td>
                       </tr>
                       <tr className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-2023-03-22</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2023-03-22</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-{new Date().getFullYear()}-{String(new Date().getMonth() + 1).padStart(2, '0')}-{String(new Date().getDate() - 5).padStart(2, '0')}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">1h 45m</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Completado</span>
@@ -467,8 +477,8 @@ const Admin = () => {
                         </td>
                       </tr>
                       <tr className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-2023-03-15</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2023-03-15</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">TR-{new Date().getFullYear()}-{String(new Date().getMonth() + 1).padStart(2, '0')}-{String(new Date().getDate() - 10).padStart(2, '0')}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3h 05m</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Fallido</span>
