@@ -17,7 +17,7 @@ const Navbar = () => {
           <div className="flex">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <Heart className="h-8 w-8 text-auxilio-rojo" />
-              <span className="ml-2 text-xl font-bold text-auxilio-azul">SalvaVidas</span>
+              <span className="ml-2 text-xl font-bold text-auxilio-azul">AuxilioVital</span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
               <Link to="/aprender" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-auxilio-azul">
