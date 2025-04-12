@@ -12,7 +12,7 @@ const Aprender = () => {
       description: "Aprende las técnicas de reanimación cardiopulmonar para adultos, niños y bebés.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/rcp",
-      imageUrl: "https://img.freepik.com/free-photo/paramedic-checking-man-pulse_23-2148502295.jpg?w=1380&t=st=1680023631~exp=1680024231~hmac=0d4c3791d3d2d80e3e1bfa4d8fae32b9a68a1b2f59cb3c6a6baa4836add8dbbb"
+      imageUrl: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?q=80&w=2070&auto=format&fit=crop"
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ const Aprender = () => {
       description: "Técnicas para tratar cortes, raspaduras, sangrados y heridas abiertas correctamente.",
       icon: <Bandage className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/heridas",
-      imageUrl: "https://img.freepik.com/free-photo/women-checking-man-s-pulse_23-2148502282.jpg?w=1380&t=st=1680023672~exp=1680024272~hmac=69b7cf876e03acb72c636752eb8efd8092a09d8c9a3db6cae37d9dce3b0c5102"
+      imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=2080&auto=format&fit=crop"
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ const Aprender = () => {
       description: "Clasificación de quemaduras y procedimientos correctos para su tratamiento inicial.",
       icon: <Thermometer className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/quemaduras",
-      imageUrl: "https://img.freepik.com/free-photo/doctor-patient-discussing-something-while-looking-laptop_23-2148085167.jpg?w=1380&t=st=1680023714~exp=1680024314~hmac=4cbe2e8678ca48f48cb327b9159c0e18f4fca2e75f8a4731ee7aa4eccafbf915"
+      imageUrl: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1932&auto=format&fit=crop"
     },
     {
       id: 4,
@@ -36,7 +36,7 @@ const Aprender = () => {
       description: "Aprende la maniobra de Heimlich y cómo actuar ante un atragantamiento.",
       icon: <Activity className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/atragantamiento",
-      imageUrl: "https://img.freepik.com/free-photo/young-female-doctor-is-showing-something-tablet-male-colleague_1301-7841.jpg?w=1380&t=st=1680023756~exp=1680024356~hmac=ec6c0c62d16b6f5c068fee1c3a7054bcf641e73c22c9ca41a28600578b3e83de"
+      imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop"
     },
     {
       id: 5,
@@ -44,7 +44,7 @@ const Aprender = () => {
       description: "Reconocimiento y actuación ante infartos y otras emergencias cardíacas.",
       icon: <Heart className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/emergencias-cardiacas",
-      imageUrl: "https://img.freepik.com/free-photo/top-view-medical-still-life-with-heart_23-2148854064.jpg?w=1380&t=st=1680023792~exp=1680024392~hmac=d3c97573eb389f4aa9e427417308fcb2cac4ed7b96f27263c5b54b857e13529c"
+      imageUrl: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=2070&auto=format&fit=crop"
     },
     {
       id: 6,
@@ -52,7 +52,7 @@ const Aprender = () => {
       description: "Cómo identificar y manejar fracturas, esguinces y traumatismos.",
       icon: <Bandage className="h-5 w-5 text-auxilio-azul" />,
       linkTo: "/aprender/traumatismos",
-      imageUrl: "https://img.freepik.com/free-photo/physiotherapist-giving-arm-treatment-patient_107420-65326.jpg?w=1380&t=st=1680023833~exp=1680024433~hmac=c8a7c85b81701f8d4c1be473b9c374bee9c0b8853683e1a20d2e128cf2a60ebb"
+      imageUrl: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=2070&auto=format&fit=crop"
     },
   ];
 

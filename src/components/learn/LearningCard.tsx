@@ -13,13 +13,14 @@ interface LearningCardProps {
 
 const LearningCard = ({ title, description, icon, linkTo, imageUrl }: LearningCardProps) => {
   return (
-    <div className="auxilio-card flex flex-col h-full">
+    <div className="auxilio-card flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300">
       {imageUrl && (
-        <div className="h-48 overflow-hidden">
+        <div className="h-48 overflow-hidden rounded-t-lg">
           <img 
             src={imageUrl} 
             alt={title} 
             className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105" 
+            loading="lazy"
           />
         </div>
       )}
