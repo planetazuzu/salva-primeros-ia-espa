@@ -10,6 +10,7 @@ import Quiz from "./pages/Quiz";
 import Chatbot from "./pages/Chatbot";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import RCPBasico from "./pages/RCPBasico";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/aprender" element={<Aprender />} />
+          <Route path="/aprender/rcp" element={<RCPBasico />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/admin" element={<Admin />} />
