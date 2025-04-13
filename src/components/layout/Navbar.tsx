@@ -1,14 +1,40 @@
-
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Heart, BookOpen, HelpCircle, Users, LayoutDashboard } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown, UserCircle } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        setIsLoggedIn(true);
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -104,6 +130,56 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:flex md:items-center md:space-x-4`}>
+        <div className="hidden md:block">
+          <Link 
+            to="/aprender" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <BookOpen className="h-4 w-4 mr-1" />
+            Aprender
+          </Link>
+          <Link 
+            to="/quiz" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <HelpCircle className="h-4 w-4 mr-1" />
+            Quiz
+          </Link>
+          <Link 
+            to="/chatbot" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <Users className="h-4 w-4 mr-1" />
+            Asistente IA
+          </Link>
+          <Link 
+            to="/admin" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <LayoutDashboard className="h-4 w-4 mr-1" />
+            Administración
+          </Link>
+        </div>
+        {isLoggedIn ? (
+          <Link 
+            to="/admin" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <UserCircle className="h-4 w-4 mr-1" />
+            Admin
+          </Link>
+        ) : (
+          <Link 
+            to="/auth" 
+            className="auxilio-btn-secondary flex items-center px-3 py-1 ml-3"
+          >
+            <UserCircle className="h-4 w-4 mr-1" />
+            Acceder
+          </Link>
+        )}
+      </div>
     </nav>
   );
 };

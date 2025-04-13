@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import { Upload, ChevronRight, CheckCircle, File, Image, Video, FileText, Film, Users, Database } from 'lucide-react';
+import { Upload, ChevronRight, CheckCircle, File, Image, Video, FileText, Film, Users, Database, Shield, LogOut } from 'lucide-react';
 import KnowledgeBaseManager from '../components/admin/KnowledgeBaseManager';
 import DashboardOverview from '../components/admin/DashboardOverview';
+import UserManagement from '../components/admin/UserManagement';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from "@/components/ui/use-toast";
 
 interface MediaItem {
   id: string;
@@ -23,43 +27,62 @@ interface FeedbackItem {
 }
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<'media' | 'feedback' | 'training' | 'dashboard'>('dashboard');
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'media' | 'feedback' | 'training' | 'dashboard' | 'users'>('dashboard');
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userLoading, setUserLoading] = useState(true);
 
-  const mediaItems: MediaItem[] = [
-    { id: '1', name: 'Técnica de RCP.mp4', type: 'video', size: '24.5 MB', date: '2023-04-12', category: 'Técnicas' },
-    { id: '2', name: 'Guía de primeros auxilios.pdf', type: 'document', size: '3.2 MB', date: '2023-04-10', category: 'Guías' },
-    { id: '3', name: 'Atragantamiento - maniobra.jpg', type: 'image', size: '1.8 MB', date: '2023-04-05', category: 'Técnicas' },
-    { id: '4', name: 'Curso emergencias.pptx', type: 'presentation', size: '12.4 MB', date: '2023-03-28', category: 'Cursos' },
-    { id: '5', name: 'Traumatismos.mp4', type: 'video', size: '18.7 MB', date: '2023-03-15', category: 'Primeros auxilios' },
-  ];
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+      
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('is_approved, role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error || !profile || !profile.is_approved) {
+        toast({
+          title: "Acceso denegado",
+          description: "Tu cuenta no está aprobada o no tienes permisos suficientes.",
+          variant: "destructive",
+          duration: 5000
+        });
+        await supabase.auth.signOut();
+        navigate('/auth');
+        return;
+      }
+      
+      setIsAdmin(profile.role === 'admin');
+      setUserLoading(false);
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/auth');
+      } else if (!session) {
+        navigate('/auth');
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
-  const feedbackItems: FeedbackItem[] = [
-    {
-      id: '1',
-      question: '¿Cómo tratar una quemadura de segundo grado?',
-      response: 'Para tratar una quemadura de segundo grado, primero enfría la zona con agua corriente...',
-      feedback: 'positive',
-      date: '2023-04-11'
-    },
-    {
-      id: '2',
-      question: '¿Qué hacer en caso de ataque cardíaco?',
-      response: 'En caso de un posible ataque cardíaco, lo primero es llamar a emergencias...',
-      feedback: 'negative',
-      comment: 'La respuesta no mencionó la posición correcta para la persona afectada',
-      date: '2023-04-09'
-    },
-    {
-      id: '3',
-      question: '¿Cómo realizar correctamente un vendaje compresivo?',
-      response: 'Para realizar un vendaje compresivo, primero coloca una gasa estéril sobre la herida...',
-      feedback: 'positive',
-      date: '2023-04-07'
-    },
-  ];
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
 
   const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -118,14 +141,33 @@ const Admin = () => {
     }
   };
 
+  if (userLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-auxilio-azul"></div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="auxilio-container py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-auxilio-azul mb-4">Panel de Administración</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Gestiona el contenido multimedia y el entrenamiento de la IA para mejorar la experiencia educativa.
-          </p>
+        <div className="flex justify-between items-center mb-6">
+          <div className="text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-auxilio-azul mb-4">Panel de Administración</h1>
+            <p className="text-lg text-gray-600 max-w-2xl">
+              Gestiona el contenido multimedia y el entrenamiento de la IA para mejorar la experiencia educativa.
+            </p>
+          </div>
+          <button 
+            onClick={handleSignOut}
+            className="auxilio-btn-secondary flex items-center"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Cerrar sesión
+          </button>
         </div>
 
         <div className="flex border-b border-gray-200 mb-6 overflow-x-auto">
@@ -139,6 +181,18 @@ const Admin = () => {
           >
             Dashboard
           </button>
+          {isAdmin && (
+            <button
+              className={`py-2 px-4 font-medium whitespace-nowrap ${
+                activeTab === 'users'
+                  ? 'text-auxilio-azul border-b-2 border-auxilio-azul'
+                  : 'text-gray-500 hover:text-auxilio-azul'
+              }`}
+              onClick={() => setActiveTab('users')}
+            >
+              Gestión de Usuarios
+            </button>
+          )}
           <button
             className={`py-2 px-4 font-medium whitespace-nowrap ${
               activeTab === 'media'
@@ -176,6 +230,13 @@ const Admin = () => {
             <div>
               <h2 className="text-xl font-semibold text-auxilio-azul mb-4">Panel de Control</h2>
               <DashboardOverview />
+            </div>
+          )}
+
+          {activeTab === 'users' && isAdmin && (
+            <div>
+              <h2 className="text-xl font-semibold text-auxilio-azul mb-4">Gestión de Usuarios</h2>
+              <UserManagement />
             </div>
           )}
 

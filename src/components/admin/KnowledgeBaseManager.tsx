@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Database, Upload, X, Check, FileText, RefreshCw, AlertCircle } from 'lucide-react';
 import { supabase } from '../../integrations/supabase/client';
@@ -37,13 +38,13 @@ const KnowledgeBaseManager = () => {
 
   // Add a new knowledge source
   const addSourceMutation = useMutation({
-    mutationFn: async (source: Omit<KnowledgeSource, 'id'>) => {
+    mutationFn: async (source: { name: string; url: string; active: boolean }) => {
       const { data, error } = await supabase
         .from('knowledge_sources')
         .insert({
           name: source.name,
           url: source.url,
-          active: false
+          active: source.active
         })
         .select()
         .single();
