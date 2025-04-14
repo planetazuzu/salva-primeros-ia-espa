@@ -1,6 +1,17 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, UserCircle } from 'lucide-react';
+import { 
+  Menu, 
+  X, 
+  ChevronDown, 
+  UserCircle, 
+  Heart, 
+  BookOpen, 
+  HelpCircle, 
+  Users, 
+  LayoutDashboard 
+} from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 
