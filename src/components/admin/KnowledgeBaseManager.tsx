@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Database, Upload, X, Check, FileText, RefreshCw, AlertCircle } from 'lucide-react';
 import { supabase } from '../../integrations/supabase/client';
@@ -21,7 +20,6 @@ const KnowledgeBaseManager = () => {
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  // Fetch knowledge sources from Supabase
   const { 
     data: sources = [], 
     isLoading, 
@@ -43,7 +41,6 @@ const KnowledgeBaseManager = () => {
     }
   });
 
-  // Add a new knowledge source
   const addSourceMutation = useMutation({
     mutationFn: async (source: Omit<KnowledgeSource, 'id'>) => {
       const { data, error } = await supabase
@@ -81,7 +78,6 @@ const KnowledgeBaseManager = () => {
     }
   });
 
-  // Remove a knowledge source
   const removeSourceMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -115,7 +111,6 @@ const KnowledgeBaseManager = () => {
     }
   });
 
-  // Toggle source active status
   const toggleSourceMutation = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
       const { data, error } = await supabase
@@ -148,20 +143,17 @@ const KnowledgeBaseManager = () => {
     }
   });
 
-  // Sync a knowledge source
   const syncSourceMutation = useMutation({
     mutationFn: async (id: string) => {
       setSyncingId(id);
       
       try {
-        // Call the edge function to sync the source
         const { data: syncData, error: syncError } = await supabase.functions.invoke('sync-knowledge', {
           body: { action: 'syncSource', sourceId: id }
         });
 
         if (syncError) throw syncError;
         
-        // Update the last_synced timestamp
         const { data, error } = await supabase
           .from('knowledge_sources')
           .update({ 
@@ -200,7 +192,6 @@ const KnowledgeBaseManager = () => {
     }
   });
 
-  // Sync all knowledge sources
   const syncAllSources = async () => {
     toast({
       title: "Sincronización iniciada",
@@ -215,7 +206,6 @@ const KnowledgeBaseManager = () => {
       
       if (error) throw error;
       
-      // Refresh the sources list
       queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
       
       toast({
