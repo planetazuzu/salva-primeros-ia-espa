@@ -1,63 +1,55 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Index from './pages/Index';
-import Admin from './pages/Admin';
-import Auth from './pages/Auth';
-import Aprender from './pages/Aprender';
-import Contacto from './pages/Contacto';
-import AcercaDe from './pages/AcercaDe';
-import RCPBasico from './pages/RCPBasico';
-import Heridas from './pages/Heridas';
-import Quemaduras from './pages/Quemaduras';
-import Atragantamiento from './pages/Atragantamiento';
-import Traumatismos from './pages/Traumatismos';
-import EmergenciasCardiacas from './pages/EmergenciasCardiacas';
-import Botiquin from './pages/Botiquin';
-import Quiz from './pages/Quiz';
-import Chatbot from './pages/Chatbot';
-import NotFound from './pages/NotFound';
-import PoliticasPrivacidad from './pages/PoliticasPrivacidad';
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import Aprender from "./pages/Aprender";
+import Quiz from "./pages/Quiz";
+import Chatbot from "./pages/Chatbot";
+import Admin from "./pages/Admin";
+import NotFound from "./pages/NotFound";
+import RCPBasico from "./pages/RCPBasico";
+import Heridas from "./pages/Heridas";
+import Quemaduras from "./pages/Quemaduras";
+import Atragantamiento from "./pages/Atragantamiento";
+import EmergenciasCardiacas from "./pages/EmergenciasCardiacas";
+import Traumatismos from "./pages/Traumatismos";
+import Botiquin from "./pages/Botiquin";
+import PoliticasPrivacidad from "./pages/PoliticasPrivacidad";
+import AcercaDe from "./pages/AcercaDe";
+import Contacto from "./pages/Contacto";
 
-import './App.css';
+const queryClient = new QueryClient();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="/aprender" element={<Aprender />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/acerca-de" element={<AcercaDe />} />
-          <Route path="/rcp-basico" element={<RCPBasico />} />
-          <Route path="/heridas" element={<Heridas />} />
-          <Route path="/quemaduras" element={<Quemaduras />} />
-          <Route path="/atragantamiento" element={<Atragantamiento />} />
-          <Route path="/traumatismos" element={<Traumatismos />} />
-          <Route path="/emergencias-cardiacas" element={<EmergenciasCardiacas />} />
-          <Route path="/botiquin" element={<Botiquin />} />
+          <Route path="/aprender/rcp" element={<RCPBasico />} />
+          <Route path="/aprender/heridas" element={<Heridas />} />
+          <Route path="/aprender/quemaduras" element={<Quemaduras />} />
+          <Route path="/aprender/atragantamiento" element={<Atragantamiento />} />
+          <Route path="/aprender/emergencias-cardiacas" element={<EmergenciasCardiacas />} />
+          <Route path="/aprender/traumatismos" element={<Traumatismos />} />
+          <Route path="/aprender/botiquin" element={<Botiquin />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/politicas-privacidad" element={<PoliticasPrivacidad />} />
+          <Route path="/acerca-de" element={<AcercaDe />} />
+          <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <Toaster />
-      </Router>
-    </QueryClientProvider>
-  );
-}
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
