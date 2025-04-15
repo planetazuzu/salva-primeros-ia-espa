@@ -14,11 +14,11 @@ serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get('PERPLEXITY_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     
     // Si no hay API key configurada, devolvemos un error
     if (!apiKey) {
-      console.error('PERPLEXITY_API_KEY no está configurada');
+      console.error('OPENAI_API_KEY no está configurada');
       return new Response(
         JSON.stringify({ 
           error: "API key no configurada",
@@ -58,31 +58,30 @@ serve(async (req) => {
       content: message
     });
 
-    console.log('Enviando consulta a Perplexity: ', message);
+    console.log('Enviando consulta a OpenAI: ', message);
     
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
+        model: 'gpt-4o-mini',
         messages: messages,
         temperature: 0.2,
-        top_p: 0.9,
         max_tokens: 1000
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error de Perplexity:', errorData);
+      console.error('Error de OpenAI:', errorData);
       throw new Error(`Error de API: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Respuesta recibida de Perplexity');
+    console.log('Respuesta recibida de OpenAI');
     
     return new Response(
       JSON.stringify({ 
