@@ -20,6 +20,7 @@ import Botiquin from "./pages/Botiquin";
 import PoliticasPrivacidad from "./pages/PoliticasPrivacidad";
 import AcercaDe from "./pages/AcercaDe";
 import Contacto from "./pages/Contacto";
+import Escenarios from "./pages/Escenarios";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/aprender/botiquin" element={<Botiquin />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/escenarios" element={<Escenarios />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/politicas-privacidad" element={<PoliticasPrivacidad />} />
           <Route path="/acerca-de" element={<AcercaDe />} />

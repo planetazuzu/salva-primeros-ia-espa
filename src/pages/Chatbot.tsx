@@ -67,7 +67,6 @@ const Chatbot = () => {
     checkApiKey();
   }, []);
 
-  // Función para iniciar la carga del modelo de Hugging Face
   const loadHuggingFaceModel = async () => {
     try {
       setModelLoadingStatus({...modelLoadingStatus, isLoading: true});
@@ -107,7 +106,6 @@ const Chatbot = () => {
     }
   };
 
-  // Función para probar la conexión con Ollama
   const testOllamaConnection = async () => {
     try {
       setLoading(true);
@@ -194,7 +192,6 @@ const Chatbot = () => {
     } catch (error) {
       console.error('Error generando respuesta:', error);
       
-      // Intentar usar respuesta simulada si falla otro método
       let fallbackResponse = "Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde.";
       
       try {
@@ -230,7 +227,6 @@ const Chatbot = () => {
     ));
   };
 
-  // Cambiar entre modos de IA
   const handleChangeAIMode = (mode: AIMode) => {
     if (mode === 'huggingface' && !modelLoadingStatus.isLoaded) {
       loadHuggingFaceModel();
