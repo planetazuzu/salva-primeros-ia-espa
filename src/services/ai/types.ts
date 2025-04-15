@@ -1,4 +1,3 @@
-
 // Common types used across AI services
 export type AIMode = 'simulado' | 'openai' | 'huggingface' | 'ollama';
 
