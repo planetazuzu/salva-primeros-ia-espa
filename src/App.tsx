@@ -1,13 +1,12 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Chatbot from "./pages/Chatbot";
 import Index from "./pages/Index";
 import Aprender from "./pages/Aprender";
 import Quiz from "./pages/Quiz";
-import Chatbot from "./pages/Chatbot";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import RCPBasico from "./pages/RCPBasico";
