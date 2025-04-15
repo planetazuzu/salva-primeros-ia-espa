@@ -1,25 +1,13 @@
 
 import React from 'react';
 import { MessageCircle, Bot, Brain, Server, Cpu } from 'lucide-react';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
-import { Message, AIMode } from './types';
+import { AIMode } from '../types';
 
-interface ChatInterfaceProps {
-  messages: Message[];
-  loading: boolean;
+interface ChatFooterProps {
   aiMode: AIMode;
-  onSendMessage: (message: string) => void;
-  onFeedback: (messageId: string, type: 'like' | 'dislike') => void;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  messages,
-  loading,
-  aiMode,
-  onSendMessage,
-  onFeedback
-}) => {
+const ChatFooter: React.FC<ChatFooterProps> = ({ aiMode }) => {
   const renderAIInfo = () => {
     switch (aiMode) {
       case 'openai':
@@ -55,24 +43,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="md:col-span-3 flex flex-col h-[600px] auxilio-card p-0 overflow-hidden">
-      <MessageList 
-        messages={messages} 
-        loading={loading} 
-        onFeedback={onFeedback} 
-      />
-      
-      <MessageInput 
-        onSendMessage={onSendMessage} 
-        loading={loading} 
-      />
-      
-      <div className="px-4 pb-3 text-xs text-gray-500 flex items-center">
-        <MessageCircle className="h-3 w-3 mr-1" />
-        {renderAIInfo()}
-      </div>
+    <div className="px-4 pb-3 text-xs text-gray-500 flex items-center">
+      <MessageCircle className="h-3 w-3 mr-1" />
+      {renderAIInfo()}
     </div>
   );
 };
 
-export default ChatInterface;
+export default ChatFooter;

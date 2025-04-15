@@ -2,20 +2,12 @@
 import React from 'react';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Message } from './types';
+import { formatMessageText, formatMessageTime } from './ChatInterface/utils';
 
 interface ChatMessageProps {
   message: Message;
   onFeedback: (messageId: string, type: 'like' | 'dislike') => void;
 }
-
-const formatMessageText = (text: string) => {
-  return text.split('\n').map((line, i) => (
-    <span key={i}>
-      {line}
-      <br />
-    </span>
-  ));
-};
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, onFeedback }) => {
   return (
@@ -36,7 +28,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onFeedback }) => {
         </div>
         <div className="mt-1 flex items-center justify-between">
           <span className="text-xs opacity-70">
-            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {formatMessageTime(message.timestamp)}
           </span>
           {message.sender === 'bot' && (
             <div className="flex space-x-2">
