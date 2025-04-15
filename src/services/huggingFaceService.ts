@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configuramos para usar WebGPU si está disponible
@@ -37,9 +36,8 @@ export const initEmbeddingModel = async () => {
     console.log('Cargando modelo de embedding...');
     
     // Cargar el modelo para obtener embeddings de texto
-    _embeddingModel = await pipeline('feature-extraction', MODEL_ID, {
-      quantized: true // Usar versión cuantizada para menor uso de memoria
-    });
+    // Eliminamos la opción 'quantized' ya que no es compatible con la versión actual
+    _embeddingModel = await pipeline('feature-extraction', MODEL_ID);
     
     modelStatus.isLoaded = true;
     modelStatus.isLoading = false;
@@ -89,7 +87,7 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
       },
       {
         context: "fractura hueso roto",
-        response: "Para manejar una posible fractura: \n\n1. Inmoviliza la zona lesionada en la posición en que se encuentre.\n2. Aplica hielo envuelto en un paño (nunca directamente sobre la piel) durante 20 minutos.\n3. Eleva la extremidad lesionada si es posible y no causa dolor adicional.\n4. No intentes realinear un hueso roto o una articulación dislocada.\n5. Para transportar a la persona, inmoviliza la fractura con férulas improvisadas (revistas, tablillas).\n\nBusca atención médica de inmediato si:\n- Hay deformidad visible o asimetría.\n- Imposibilidad de mover la zona afectada.\n- Hinchazón severa o hematoma.\n- Exposición del hueso a través de la piel (fractura abierta)."
+        response: "Para manejar una posible fractura: \n\n1. Inmoviliza la zona lesionada en la posición en que se encuentre.\n2. Aplica hielo envuelto en un paño (nunca directamente sobre la piel) durante 20 minutos.\n3. Eleva la extremidad lesionada si es posible y no causa dolor adicional.\n4. No intentas realinear un hueso roto o una articulación dislocada.\n5. Para transportar a la persona, inmoviliza la fractura con férulas improvisadas (revistas, tablillas).\n\nBusca atención médica de inmediato si:\n- Hay deformidad visible o asimetría.\n- Imposibilidad de mover la zona afectada.\n- Hinchazón severa o hematoma.\n- Exposición del hueso a través de la piel (fractura abierta)."
       },
       {
         context: "envenenamiento intoxicación veneno",
