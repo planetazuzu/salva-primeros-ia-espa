@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
@@ -240,9 +239,25 @@ const Chatbot = () => {
     } else {
       setAiMode(mode);
       
+      let modeDescription = '';
+      switch (mode) {
+        case 'openai':
+          modeDescription = 'ChatGPT';
+          break;
+        case 'huggingface':
+          modeDescription = 'modelo local gratuito';
+          break;
+        case 'ollama':
+          modeDescription = 'tu servidor Ollama local';
+          break;
+        case 'simulado':
+          modeDescription = 'respuestas predefinidas';
+          break;
+      }
+      
       toast({
         title: `Modo ${mode === 'openai' ? 'OpenAI' : mode === 'huggingface' ? 'Local (Hugging Face)' : mode === 'ollama' ? 'Ollama (Servidor local)' : 'Simulado'} activado`,
-        description: `Ahora estás usando ${mode === 'openai' ? 'ChatGPT' : mode === 'huggingface' ? 'modelo local gratuito' : mode === 'ollama' ? 'tu servidor Ollama local' : 'respuestas predefinidas'}`,
+        description: `Ahora estás usando ${modeDescription}`,
       });
     }
   };

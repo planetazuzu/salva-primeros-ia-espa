@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 import { ModelStatus, ModelErrorType, ModelLoadingStatus } from './types';
 import { identifyErrorType, getUserFriendlyErrorMessage, calculateSimilarity, trackEmbeddingError, showToast } from './utils';
