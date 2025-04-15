@@ -23,7 +23,7 @@ export const testOllamaConnection = async (serverUrl = 'http://localhost:11434',
     if (modelExists) {
       showToast("Conexión con Ollama exitosa", `Servidor conectado y modelo "${modelName}" disponible`);
     } else {
-      showToast("Conexión con Ollama exitosa", `Servidor conectado, pero el modelo "${modelName}" no está disponible. Considera ejecutar: ollama pull ${modelName}`, "warning");
+      showToast("Conexión con Ollama exitosa", `Servidor conectado, pero el modelo "${modelName}" no está disponible. Considera ejecutar: ollama pull ${modelName}`, "default");
     }
     
     return true;
