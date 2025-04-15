@@ -1,7 +1,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown, Info } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -22,7 +24,9 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [aiMode, setAiMode] = useState<'perplexity' | 'simulado'>('simulado');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   // Preguntas frecuentes predefinidas
   const commonQuestions = [
@@ -32,8 +36,38 @@ const Chatbot = () => {
     "¿Cómo detener una hemorragia nasal?"
   ];
 
-  // Función para generar respuestas del chatbot (simulada)
-  const generateBotResponse = (userMessage: string): Promise<string> => {
+  useEffect(() => {
+    // Comprobar si la API key está configurada
+    const checkApiKey = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('perplexity-chat', {
+          body: { message: 'check_api_key', conversationHistory: [] }
+        });
+        
+        if (!error && !data.simulatedResponse) {
+          setAiMode('perplexity');
+          console.log('Usando Perplexity AI');
+        } else {
+          console.log('Usando modo simulado');
+        }
+      } catch (error) {
+        console.error('Error al comprobar la conexión con Perplexity:', error);
+      }
+    };
+
+    checkApiKey();
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Función para generar respuestas del chatbot simulado
+  const generateSimulatedResponse = (userMessage: string): Promise<string> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Respuestas simuladas basadas en palabras clave
@@ -101,12 +135,44 @@ const Chatbot = () => {
     });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Función para generar respuestas del chatbot con Perplexity
+  const generatePerplexityResponse = async (userMessage: string): Promise<string> => {
+    try {
+      // Enviamos el mensaje actual y el historial de la conversación para contexto
+      // Excluimos el último mensaje que es el que acabamos de añadir del usuario
+      const conversationHistory = messages.slice(0, -1);
+      
+      const { data, error } = await supabase.functions.invoke('perplexity-chat', {
+        body: { 
+          message: userMessage,
+          conversationHistory: conversationHistory
+        }
+      });
+      
+      if (error) {
+        console.error('Error al llamar a la función perplexity-chat:', error);
+        throw new Error('Error al comunicarse con el servicio de IA');
+      }
+      
+      if (data.simulatedResponse) {
+        console.log('Usando respuesta simulada debido a: ', data.error || 'API key no configurada');
+        // Si recibimos que es una respuesta simulada, actualizamos el modo
+        setAiMode('simulado');
+      }
+      
+      return data.text;
+      
+    } catch (error) {
+      console.error('Error en generatePerplexityResponse:', error);
+      setAiMode('simulado');
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con la IA. Usando respuestas simuladas.",
+        variant: "destructive"
+      });
+      // Si hay error, volvemos al modo simulado para esta respuesta
+      return generateSimulatedResponse(userMessage);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -124,7 +190,10 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const response = await generateBotResponse(input);
+      // Elegimos el generador de respuestas según el modo
+      const response = aiMode === 'perplexity' 
+        ? await generatePerplexityResponse(input)
+        : await generateSimulatedResponse(input);
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -186,6 +255,16 @@ const Chatbot = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Consulta tus dudas sobre primeros auxilios y recibe respuestas inmediatas basadas en información médica actualizada.
           </p>
+          <div className="mt-2 flex items-center justify-center">
+            <div className={`px-3 py-1 rounded-full text-xs flex items-center ${
+              aiMode === 'perplexity' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              <Info className="h-3 w-3 mr-1" />
+              {aiMode === 'perplexity' 
+                ? 'Usando Perplexity AI' 
+                : 'Usando respuestas simuladas'}
+            </div>
+          </div>
         </div>
 
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">

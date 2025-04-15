@@ -27,3 +27,6 @@ enabled = true
 
 [functions.sync-knowledge]
 verify_jwt = true
+
+[functions.perplexity-chat]
+verify_jwt = true
