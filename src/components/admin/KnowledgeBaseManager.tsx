@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash, CheckCircle, XCircle, Database } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast"
@@ -32,7 +33,7 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from "@/integrations/supabase/client";
 
 interface KnowledgeSource {
   id: string;
@@ -54,7 +55,6 @@ const KnowledgeBaseManager = () => {
   const [syncInterval, setSyncInterval] = useState<number>(24);
   const { toast } = useToast()
   const queryClient = useQueryClient();
-  const supabase = createClientComponentClient();
 
   // Fetch knowledge sources
   const { data: knowledgeSources, isLoading, isError } = useQuery({
@@ -72,8 +72,8 @@ const KnowledgeBaseManager = () => {
   });
 
   // Add knowledge source mutation
-  const addKnowledgeSourceMutation = useMutation(
-    async () => {
+  const addKnowledgeSourceMutation = useMutation({
+    mutationFn: async () => {
       const { error } = await supabase
         .from('knowledge_sources')
         .insert([
@@ -89,33 +89,31 @@ const KnowledgeBaseManager = () => {
         throw new Error(error.message);
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
-        setOpen(false);
-        setSourceName('');
-        setSourceUrl('');
-        setSourceType('website');
-        setSourceStatus('active');
-        setSyncInterval(24);
-        toast({
-          title: "Fuente de conocimiento agregada",
-          description: "La fuente de conocimiento ha sido agregada exitosamente.",
-        })
-      },
-      onError: (error: any) => {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message,
-        })
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
+      setOpen(false);
+      setSourceName('');
+      setSourceUrl('');
+      setSourceType('website');
+      setSourceStatus('active');
+      setSyncInterval(24);
+      toast({
+        title: "Fuente de conocimiento agregada",
+        description: "La fuente de conocimiento ha sido agregada exitosamente.",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      })
+    },
+  });
 
   // Update knowledge source mutation
-  const updateKnowledgeSourceMutation = useMutation(
-    async (sourceId: string) => {
+  const updateKnowledgeSourceMutation = useMutation({
+    mutationFn: async (sourceId: string) => {
       const { error } = await supabase
         .from('knowledge_sources')
         .update({
@@ -130,34 +128,32 @@ const KnowledgeBaseManager = () => {
         throw new Error(error.message);
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
-        setOpen(false);
-        setEditSource(null);
-        setSourceName('');
-        setSourceUrl('');
-        setSourceType('website');
-        setSourceStatus('active');
-        setSyncInterval(24);
-        toast({
-          title: "Fuente de conocimiento actualizada",
-          description: "La fuente de conocimiento ha sido actualizada exitosamente.",
-        })
-      },
-      onError: (error: any) => {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message,
-        })
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
+      setOpen(false);
+      setEditSource(null);
+      setSourceName('');
+      setSourceUrl('');
+      setSourceType('website');
+      setSourceStatus('active');
+      setSyncInterval(24);
+      toast({
+        title: "Fuente de conocimiento actualizada",
+        description: "La fuente de conocimiento ha sido actualizada exitosamente.",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      })
+    },
+  });
 
   // Delete knowledge source mutation
-  const deleteKnowledgeSourceMutation = useMutation(
-    async (sourceId: string) => {
+  const deleteKnowledgeSourceMutation = useMutation({
+    mutationFn: async (sourceId: string) => {
       const { error } = await supabase
         .from('knowledge_sources')
         .delete()
@@ -166,27 +162,25 @@ const KnowledgeBaseManager = () => {
         throw new Error(error.message);
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
-        toast({
-          title: "Fuente de conocimiento eliminada",
-          description: "La fuente de conocimiento ha sido eliminada exitosamente.",
-        })
-      },
-      onError: (error: any) => {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message,
-        })
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
+      toast({
+        title: "Fuente de conocimiento eliminada",
+        description: "La fuente de conocimiento ha sido eliminada exitosamente.",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      })
+    },
+  });
 
   // Sync knowledge source mutation
-  const syncKnowledgeSourceMutation = useMutation(
-    async (sourceId: string) => {
+  const syncKnowledgeSourceMutation = useMutation({
+    mutationFn: async (sourceId: string) => {
       // Simulate sync process
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -199,23 +193,21 @@ const KnowledgeBaseManager = () => {
         throw new Error(error.message);
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
-        toast({
-          title: "Fuente de conocimiento sincronizada",
-          description: "La fuente de conocimiento ha sido sincronizada exitosamente.",
-        })
-      },
-      onError: (error: any) => {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message,
-        })
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['knowledgeSources'] });
+      toast({
+        title: "Fuente de conocimiento sincronizada",
+        description: "La fuente de conocimiento ha sido sincronizada exitosamente.",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      })
+    },
+  });
 
   const handleEdit = (source: KnowledgeSource) => {
     setEditSource(source);
@@ -243,7 +235,7 @@ const KnowledgeBaseManager = () => {
         <h2 className="text-xl font-semibold text-auxilio-azul">Gestor de Base de Conocimiento</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="primary">
+            <Button>
               <Plus className="w-4 h-4 mr-2" />
               Añadir nueva fuente
             </Button>
@@ -313,7 +305,6 @@ const KnowledgeBaseManager = () => {
             <div className="flex justify-end">
               <Button variant="secondary" onClick={handleCancelEdit}>Cancelar</Button>
               <Button
-                variant="primary"
                 className="ml-2"
                 onClick={() => {
                   if (editSource) {
@@ -322,7 +313,7 @@ const KnowledgeBaseManager = () => {
                     addKnowledgeSourceMutation.mutate();
                   }
                 }}
-                disabled={addKnowledgeSourceMutation.isLoading || updateKnowledgeSourceMutation.isLoading}
+                disabled={addKnowledgeSourceMutation.isPending || updateKnowledgeSourceMutation.isPending}
               >
                 {editSource ? 'Actualizar' : 'Guardar'}
               </Button>
@@ -375,9 +366,9 @@ const KnowledgeBaseManager = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => syncKnowledgeSourceMutation.mutate(source.id)}
-                    disabled={syncKnowledgeSourceMutation.isLoading}
+                    disabled={syncKnowledgeSourceMutation.isPending}
                   >
-                    {syncKnowledgeSourceMutation.isLoading ? (
+                    {syncKnowledgeSourceMutation.isPending ? (
                       <>
                         <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -396,7 +387,7 @@ const KnowledgeBaseManager = () => {
                     variant="destructive"
                     size="sm"
                     onClick={() => deleteKnowledgeSourceMutation.mutate(source.id)}
-                    disabled={deleteKnowledgeSourceMutation.isLoading}
+                    disabled={deleteKnowledgeSourceMutation.isPending}
                   >
                     <Trash className="w-4 h-4 mr-2" />
                     Eliminar
