@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 import { toast } from "@/hooks/use-toast";
 
@@ -7,7 +6,7 @@ env.useBrowserCache = true;
 env.allowLocalModels = false;
 
 // Define el tipo para los modos de IA disponibles
-export type AIMode = 'openai' | 'simulado' | 'huggingface';
+export type AIMode = 'openai' | 'simulado' | 'huggingface' | 'ollama';
 
 // Define tipos específicos de errores que pueden ocurrir
 export enum ModelErrorType {
@@ -135,8 +134,8 @@ export const initEmbeddingModel = async (forceReload = false): Promise<any> => {
     
     // Opciones avanzadas para control de WebGPU y fallback
     const options = {
-      progress_callback: (progress: { status: string, progress: number }) => {
-        console.log(`Progreso de carga: ${progress.status} - ${Math.round(progress.progress * 100)}%`);
+      progress_callback: (progressInfo: any) => {
+        console.log(`Progreso de carga: ${progressInfo.status || ''} - ${Math.round((progressInfo.progress || 0) * 100)}%`);
       }
     };
     
@@ -305,6 +304,62 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
     });
     
     return "Lo siento, ha ocurrido un error al procesar tu consulta con el modelo local. Por favor, intenta de nuevo más tarde o utiliza el modo simulado.";
+  }
+};
+
+// Función para generar respuestas utilizando Ollama en un servidor local
+export const generateOllamaResponse = async (userMessage: string, conversationHistory: Array<{sender: string, text: string}>, serverUrl = 'http://localhost:11434'): Promise<string> => {
+  try {
+    // Preparamos el historial en el formato que espera Ollama
+    const messages = conversationHistory.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
+    
+    // Agregamos el mensaje actual del usuario
+    messages.push({
+      role: 'user',
+      content: userMessage
+    });
+    
+    // Configuramos la petición a la API de Ollama
+    const response = await fetch(`${serverUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'mediachat', // Puedes cambiar esto por el nombre de tu modelo
+        messages: messages,
+        stream: false
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error del servidor Ollama: ${errorData.error || response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    // Notificar éxito y retornar la respuesta
+    toast({
+      title: "Respuesta generada con Ollama",
+      description: "Tu servidor local de IA ha procesado la consulta",
+    });
+    
+    return data.message?.content || "No se pudo generar una respuesta con Ollama";
+  } catch (error) {
+    console.error('Error al generar respuesta con Ollama:', error);
+    
+    // Notificar al usuario del error
+    toast({
+      title: "Error al conectar con Ollama",
+      description: "No se pudo conectar con tu servidor local. Verifica que esté en ejecución.",
+      variant: "destructive"
+    });
+    
+    return `Error al conectar con tu servidor Ollama: ${error instanceof Error ? error.message : String(error)}. Verifica que el servidor esté ejecutándose en la URL configurada.`;
   }
 };
 

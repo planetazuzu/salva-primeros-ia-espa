@@ -1,10 +1,28 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown, Info } from 'lucide-react';
+import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown, Info, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { AIMode, generateLocalResponse, getModelStatus, initEmbeddingModel } from '@/services/huggingFaceService';
+import { 
+  AIMode, 
+  generateLocalResponse, 
+  generateOllamaResponse,
+  getModelStatus, 
+  initEmbeddingModel 
+} from '@/services/huggingFaceService';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Message {
   id: string;
@@ -26,6 +44,8 @@ const Chatbot = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [aiMode, setAiMode] = useState<AIMode>('simulado');
+  const [ollamaServerUrl, setOllamaServerUrl] = useState('http://localhost:11434');
+  const [ollamaModelName, setOllamaModelName] = useState('mediachat');
   const [modelLoadingStatus, setModelLoadingStatus] = useState({
     isLoading: false,
     isLoaded: false,
@@ -101,6 +121,51 @@ const Chatbot = () => {
         description: "No se pudo cargar el modelo de IA. Usando respuestas simuladas.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Función para probar la conexión con Ollama
+  const testOllamaConnection = async () => {
+    try {
+      setLoading(true);
+      
+      // Notificar al usuario que estamos probando la conexión
+      toast({
+        title: "Probando conexión con Ollama",
+        description: "Verificando la conexión con tu servidor local...",
+      });
+      
+      const response = await fetch(`${ollamaServerUrl}/api/tags`);
+      
+      if (!response.ok) {
+        throw new Error(`Error al conectar con Ollama: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.models && data.models.length > 0) {
+        setAiMode('ollama');
+        toast({
+          title: "Conexión exitosa con Ollama",
+          description: `Se encontraron ${data.models.length} modelos disponibles`,
+        });
+      } else {
+        toast({
+          title: "Conexión establecida, pero sin modelos",
+          description: "No se encontraron modelos disponibles en tu servidor Ollama",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error al probar la conexión con Ollama:', error);
+      
+      toast({
+        title: "Error de conexión",
+        description: error instanceof Error ? error.message : 'No se pudo conectar con el servidor Ollama',
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -238,6 +303,9 @@ const Chatbot = () => {
         case 'huggingface':
           response = await generateLocalResponse(input, messages);
           break;
+        case 'ollama':
+          response = await generateOllamaResponse(input, messages, ollamaServerUrl);
+          break;
         case 'simulado':
         default:
           response = await generateSimulatedResponse(input);
@@ -300,12 +368,14 @@ const Chatbot = () => {
   const handleChangeAIMode = (mode: AIMode) => {
     if (mode === 'huggingface' && !modelLoadingStatus.isLoaded) {
       loadHuggingFaceModel();
+    } else if (mode === 'ollama') {
+      testOllamaConnection();
     } else {
       setAiMode(mode);
       
       toast({
-        title: `Modo ${mode === 'openai' ? 'OpenAI' : mode === 'huggingface' ? 'Local (Hugging Face)' : 'Simulado'} activado`,
-        description: `Ahora estás usando ${mode === 'openai' ? 'ChatGPT' : mode === 'huggingface' ? 'modelo local gratuito' : 'respuestas predefinidas'}`,
+        title: `Modo ${mode === 'openai' ? 'OpenAI' : mode === 'huggingface' ? 'Local (Hugging Face)' : mode === 'ollama' ? 'Ollama (Servidor local)' : 'Simulado'} activado`,
+        description: `Ahora estás usando ${mode === 'openai' ? 'ChatGPT' : mode === 'huggingface' ? 'modelo local gratuito' : mode === 'ollama' ? 'tu servidor Ollama local' : 'respuestas predefinidas'}`,
       });
     }
   };
@@ -318,7 +388,7 @@ const Chatbot = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Consulta tus dudas sobre primeros auxilios y recibe respuestas inmediatas basadas en información médica actualizada.
           </p>
-          <div className="mt-2 flex items-center justify-center gap-2">
+          <div className="mt-2 flex items-center justify-center gap-2 flex-wrap">
             <div 
               className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
                 aiMode === 'openai' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800 hover:bg-green-50'
@@ -339,6 +409,15 @@ const Chatbot = () => {
             </div>
             <div 
               className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
+                aiMode === 'ollama' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800 hover:bg-purple-50'
+              }`}
+              onClick={() => handleChangeAIMode('ollama')}
+            >
+              <Info className="h-3 w-3 mr-1" />
+              Ollama (Servidor)
+            </div>
+            <div 
+              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
                 aiMode === 'simulado' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800 hover:bg-yellow-50'
               }`}
               onClick={() => handleChangeAIMode('simulado')}
@@ -346,6 +425,52 @@ const Chatbot = () => {
               <Info className="h-3 w-3 mr-1" />
               Respuestas Simuladas
             </div>
+            
+            {aiMode === 'ollama' && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="ml-2">
+                    <Settings className="h-3 w-3 mr-1" />
+                    Configurar Ollama
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Configuración de Ollama</DialogTitle>
+                    <DialogDescription>
+                      Configura la conexión a tu servidor local de Ollama
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="server-url" className="text-right">
+                        URL del servidor
+                      </Label>
+                      <Input
+                        id="server-url"
+                        value={ollamaServerUrl}
+                        onChange={(e) => setOllamaServerUrl(e.target.value)}
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="model-name" className="text-right">
+                        Nombre del modelo
+                      </Label>
+                      <Input
+                        id="model-name"
+                        value={ollamaModelName}
+                        onChange={(e) => setOllamaModelName(e.target.value)}
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={testOllamaConnection}>Probar conexión</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
 
@@ -472,6 +597,8 @@ const Chatbot = () => {
                 <span>
                   {aiMode === 'huggingface' 
                     ? 'Utilizando modelo de IA local. Las respuestas se procesan en tu navegador.' 
+                    : aiMode === 'ollama'
+                    ? 'Utilizando tu servidor Ollama local para generar respuestas.' 
                     : 'La información proporcionada es solo educativa. En emergencias reales, llama a los servicios de emergencia.'}
                 </span>
               </div>
