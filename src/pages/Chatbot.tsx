@@ -10,7 +10,8 @@ import {
   generateOllamaResponse,
   getModelStatus, 
   initEmbeddingModel,
-  generateSimulatedResponse
+  generateSimulatedResponse,
+  generateOpenAiResponse
 } from '@/services/ai';
 
 // Componentes refactorizados
@@ -151,41 +152,6 @@ const Chatbot = () => {
     }
   };
 
-  const generateOpenAiResponse = async (userMessage: string): Promise<string> => {
-    try {
-      const conversationHistory = messages.slice(0, -1);
-      
-      const { data, error } = await supabase.functions.invoke('perplexity-chat', {
-        body: { 
-          message: userMessage,
-          conversationHistory: conversationHistory
-        }
-      });
-      
-      if (error) {
-        console.error('Error al llamar a la función perplexity-chat:', error);
-        throw new Error('Error al comunicarse con el servicio de IA');
-      }
-      
-      if (data.simulatedResponse) {
-        console.log('Usando respuesta simulada debido a: ', data.error || 'API key no configurada');
-        setAiMode('simulado');
-      }
-      
-      return data.text;
-      
-    } catch (error) {
-      console.error('Error en generateOpenAiResponse:', error);
-      setAiMode('simulado');
-      toast({
-        title: "Error de conexión",
-        description: "No se pudo conectar con la IA. Usando respuestas simuladas.",
-        variant: "destructive"
-      });
-      return generateSimulatedResponse(userMessage);
-    }
-  };
-
   const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;
 
@@ -204,7 +170,7 @@ const Chatbot = () => {
       
       switch (aiMode) {
         case 'openai':
-          response = await generateOpenAiResponse(input);
+          response = await generateOpenAiResponse(input, messages.map(m => ({ sender: m.sender, text: m.text })));
           break;
         case 'huggingface':
           response = await generateLocalResponse(input, messages.map(m => ({ sender: m.sender, text: m.text })));
@@ -229,9 +195,20 @@ const Chatbot = () => {
     } catch (error) {
       console.error('Error generando respuesta:', error);
       
+      // Intentar usar respuesta simulada si falla otro método
+      let fallbackResponse = "Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde.";
+      
+      try {
+        if (aiMode !== 'simulado') {
+          fallbackResponse = await generateSimulatedResponse(input);
+        }
+      } catch (fallbackError) {
+        console.error('Error generando respuesta de respaldo:', fallbackError);
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde.',
+        text: fallbackResponse,
         sender: 'bot',
         timestamp: new Date(),
       };

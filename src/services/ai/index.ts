@@ -5,3 +5,4 @@ export * from './utils';
 export * from './huggingfaceService';
 export * from './ollamaService';
 export * from './simulatedService';
+export * from './openaiService';
