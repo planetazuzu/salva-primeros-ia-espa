@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 /**
  * Format chat message text with proper line breaks
  */
