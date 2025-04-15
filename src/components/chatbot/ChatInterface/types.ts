@@ -1,3 +1,5 @@
 
-// Re-export types to make them available from this directory
-export { Message, AIMode } from '../types';
+import { AIMode } from '@/services/ai/types';
+import type { Message } from '../types';
+
+export { type AIMode, type Message };
