@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import Layout from '../components/layout/Layout';
-import KnowledgeBaseManager from '../components/admin/KnowledgeBaseManager';
+import KnowledgeBaseManager from '../components/admin/KnowledgeBase';
 import DashboardOverview from '../components/admin/DashboardOverview';
 import MediaUploader from '../components/admin/MediaUploader';
 import FeedbackReviewer from '../components/admin/FeedbackReviewer';
