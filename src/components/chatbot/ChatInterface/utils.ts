@@ -7,11 +7,11 @@ import React from 'react';
 export const formatMessageText = (text: string): React.ReactNode[] => {
   return text.split('\n').map((line, i) => {
     const isLastLine = i < text.split('\n').length - 1;
-    return (
-      <React.Fragment key={i}>
-        {line}
-        {isLastLine && <br />}
-      </React.Fragment>
+    return React.createElement(
+      React.Fragment,
+      { key: i },
+      line,
+      isLastLine ? React.createElement('br') : null
     );
   });
 };
