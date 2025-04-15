@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Pencil, Trash, CheckCircle, XCircle, Database } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast"
 import {
@@ -64,10 +64,21 @@ const KnowledgeBaseManager = () => {
         .from('knowledge_sources')
         .select('*')
         .order('created_at', { ascending: false });
+      
       if (error) {
         throw new Error(error.message);
       }
-      return data as KnowledgeSource[];
+      
+      // Map database response to KnowledgeSource format
+      return data.map(item => ({
+        id: item.id,
+        name: item.name,
+        url: item.url,
+        type: 'website' as 'website' | 'pdf' | 'text', // Default type
+        status: item.active ? 'active' : 'inactive' as 'active' | 'inactive',
+        last_synced: item.last_synced,
+        sync_interval: 24 // Default sync interval
+      })) as KnowledgeSource[];
     },
   });
 
@@ -80,9 +91,7 @@ const KnowledgeBaseManager = () => {
           {
             name: sourceName,
             url: sourceUrl,
-            type: sourceType,
-            status: sourceStatus,
-            sync_interval: syncInterval,
+            active: sourceStatus === 'active',
           },
         ]);
       if (error) {
@@ -119,9 +128,7 @@ const KnowledgeBaseManager = () => {
         .update({
           name: sourceName,
           url: sourceUrl,
-          type: sourceType,
-          status: sourceStatus,
-          sync_interval: syncInterval,
+          active: sourceStatus === 'active',
         })
         .eq('id', sourceId);
       if (error) {
