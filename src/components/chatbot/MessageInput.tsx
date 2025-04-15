@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Send } from 'lucide-react';
+import { Textarea } from "@/components/ui/textarea";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
@@ -11,7 +12,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, loading }) =
   const [input, setInput] = useState('');
 
   const handleSendMessage = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
     onSendMessage(input);
     setInput('');
   };
@@ -33,16 +34,17 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, loading }) =
           <Plus className="h-5 w-5" />
         </button>
         <div className="flex-grow relative">
-          <textarea
+          <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Escribe tu consulta sobre primeros auxilios..."
-            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-auxilio-azul resize-none"
+            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-auxilio-azul resize-none min-h-[44px]"
             rows={1}
+            disabled={loading}
           />
           <div className="absolute right-2 bottom-2 text-xs text-gray-400">
-            {input.length > 0 ? 'Enter para enviar' : ''}
+            {input.length > 0 && !loading ? 'Enter para enviar' : ''}
           </div>
         </div>
         <button
