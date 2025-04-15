@@ -1,8 +1,10 @@
+
 import { useState, useRef, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { AIMode, generateLocalResponse, getModelStatus, initEmbeddingModel } from '@/services/huggingFaceService';
 
 interface Message {
   id: string;
@@ -23,7 +25,12 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [aiMode, setAiMode] = useState<'openai' | 'simulado'>('simulado');
+  const [aiMode, setAiMode] = useState<AIMode>('simulado');
+  const [modelLoadingStatus, setModelLoadingStatus] = useState({
+    isLoading: false,
+    isLoaded: false,
+    error: null as string | null,
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -54,6 +61,48 @@ const Chatbot = () => {
 
     checkApiKey();
   }, []);
+
+  // Función para iniciar la carga del modelo de Hugging Face
+  const loadHuggingFaceModel = async () => {
+    try {
+      setModelLoadingStatus({...modelLoadingStatus, isLoading: true});
+      
+      // Notificar al usuario que el modelo está cargando
+      toast({
+        title: "Cargando modelo de IA",
+        description: "Esto puede tardar unos momentos la primera vez",
+      });
+      
+      await initEmbeddingModel();
+      
+      // Actualizar el estado con el estado del modelo
+      const status = getModelStatus();
+      setModelLoadingStatus(status);
+      
+      if (status.isLoaded) {
+        setAiMode('huggingface');
+        toast({
+          title: "Modelo cargado correctamente",
+          description: "Ahora puedes hacer preguntas usando el modelo local",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error('Error al cargar el modelo:', errorMessage);
+      
+      setModelLoadingStatus({
+        isLoading: false,
+        isLoaded: false,
+        error: errorMessage
+      });
+      
+      toast({
+        title: "Error al cargar el modelo",
+        description: "No se pudo cargar el modelo de IA. Usando respuestas simuladas.",
+        variant: "destructive"
+      });
+    }
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -180,9 +229,20 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const response = aiMode === 'openai' 
-        ? await generateOpenAiResponse(input)
-        : await generateSimulatedResponse(input);
+      let response;
+      
+      switch (aiMode) {
+        case 'openai':
+          response = await generateOpenAiResponse(input);
+          break;
+        case 'huggingface':
+          response = await generateLocalResponse(input, messages);
+          break;
+        case 'simulado':
+        default:
+          response = await generateSimulatedResponse(input);
+          break;
+      }
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -236,6 +296,20 @@ const Chatbot = () => {
     ));
   };
 
+  // Cambiar entre modos de IA
+  const handleChangeAIMode = (mode: AIMode) => {
+    if (mode === 'huggingface' && !modelLoadingStatus.isLoaded) {
+      loadHuggingFaceModel();
+    } else {
+      setAiMode(mode);
+      
+      toast({
+        title: `Modo ${mode === 'openai' ? 'OpenAI' : mode === 'huggingface' ? 'Local (Hugging Face)' : 'Simulado'} activado`,
+        description: `Ahora estás usando ${mode === 'openai' ? 'ChatGPT' : mode === 'huggingface' ? 'modelo local gratuito' : 'respuestas predefinidas'}`,
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="auxilio-container py-8">
@@ -244,14 +318,33 @@ const Chatbot = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Consulta tus dudas sobre primeros auxilios y recibe respuestas inmediatas basadas en información médica actualizada.
           </p>
-          <div className="mt-2 flex items-center justify-center">
-            <div className={`px-3 py-1 rounded-full text-xs flex items-center ${
-              aiMode === 'openai' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-            }`}>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <div 
+              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
+                aiMode === 'openai' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800 hover:bg-green-50'
+              }`}
+              onClick={() => handleChangeAIMode('openai')}
+            >
               <Info className="h-3 w-3 mr-1" />
-              {aiMode === 'openai' 
-                ? 'Usando OpenAI (ChatGPT)' 
-                : 'Usando respuestas simuladas'}
+              OpenAI (ChatGPT)
+            </div>
+            <div 
+              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
+                aiMode === 'huggingface' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800 hover:bg-blue-50'
+              }`}
+              onClick={() => handleChangeAIMode('huggingface')}
+            >
+              <Info className="h-3 w-3 mr-1" />
+              Modelo Local {modelLoadingStatus.isLoading && "(Cargando...)"}
+            </div>
+            <div 
+              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
+                aiMode === 'simulado' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800 hover:bg-yellow-50'
+              }`}
+              onClick={() => handleChangeAIMode('simulado')}
+            >
+              <Info className="h-3 w-3 mr-1" />
+              Respuestas Simuladas
             </div>
           </div>
         </div>
@@ -377,7 +470,9 @@ const Chatbot = () => {
               <div className="mt-2 text-xs text-gray-500 flex items-center">
                 <MessageCircle className="h-3 w-3 mr-1" />
                 <span>
-                  La información proporcionada es solo educativa. En emergencias reales, llama a los servicios de emergencia.
+                  {aiMode === 'huggingface' 
+                    ? 'Utilizando modelo de IA local. Las respuestas se procesan en tu navegador.' 
+                    : 'La información proporcionada es solo educativa. En emergencias reales, llama a los servicios de emergencia.'}
                 </span>
               </div>
             </div>
