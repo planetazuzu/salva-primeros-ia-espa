@@ -1,6 +1,39 @@
 
 import { showToast } from './utils';
 
+// Function to test connection to Ollama server
+export const testOllamaConnection = async (serverUrl = 'http://localhost:11434', modelName = 'mediachat') => {
+  try {
+    const response = await fetch(`${serverUrl}/api/tags`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Check if the requested model is available
+    const modelExists = data.models?.some(model => model.name === modelName);
+    
+    if (modelExists) {
+      showToast("Conexión con Ollama exitosa", `Servidor conectado y modelo "${modelName}" disponible`);
+    } else {
+      showToast("Conexión con Ollama exitosa", `Servidor conectado, pero el modelo "${modelName}" no está disponible. Considera ejecutar: ollama pull ${modelName}`, "warning");
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error al conectar con Ollama:', error);
+    showToast("Error de conexión con Ollama", `No se pudo conectar al servidor en ${serverUrl}. Verifica que Ollama esté en ejecución.`, "destructive");
+    return false;
+  }
+};
+
 // Function to generate responses using Ollama on a local server
 export const generateOllamaResponse = async (
   userMessage: string, 

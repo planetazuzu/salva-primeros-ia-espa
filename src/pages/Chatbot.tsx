@@ -18,6 +18,8 @@ const Chatbot = () => {
     isLoaded: false,
     error: null
   });
+  const [ollamaServerUrl, setOllamaServerUrl] = useState<string>('http://localhost:11434');
+  const [ollamaModelName, setOllamaModelName] = useState<string>('mediachat');
 
   const loadHuggingFaceModel = useCallback(async () => {
     try {
@@ -44,7 +46,8 @@ const Chatbot = () => {
         }
         break;
       case 'ollama':
-        testOllamaConnection();
+        testOllamaConnection(ollamaServerUrl, ollamaModelName);
+        setAiMode(mode);
         break;
       default:
         setAiMode(mode);
@@ -91,11 +94,21 @@ const Chatbot = () => {
     ));
   };
 
+  const testOllamaConnectionHandler = async () => {
+    await testOllamaConnection(ollamaServerUrl, ollamaModelName);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <AIModelSelector 
         currentMode={aiMode} 
-        onModeChange={handleChangeAIMode} 
+        onChangeMode={handleChangeAIMode}
+        modelLoadingStatus={modelLoadingStatus}
+        testOllamaConnection={testOllamaConnectionHandler}
+        ollamaServerUrl={ollamaServerUrl}
+        setOllamaServerUrl={setOllamaServerUrl}
+        ollamaModelName={ollamaModelName}
+        setOllamaModelName={setOllamaModelName}
       />
       <ChatInterface 
         messages={messages}

@@ -310,19 +310,19 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
 // Función para generar respuestas utilizando Ollama en un servidor local
 export const generateOllamaResponse = async (
   userMessage: string, 
-  messages: any[], 
+  messages: Array<{sender: string, text: string}>, 
   serverUrl: string,
   modelName: string = 'mediachat'
 ): Promise<string> => {
   try {
     // Preparamos el historial en el formato que espera Ollama
-    const messages = conversationHistory.map(msg => ({
+    const formattedMessages = messages.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'assistant',
       content: msg.text
     }));
     
     // Agregamos el mensaje actual del usuario
-    messages.push({
+    formattedMessages.push({
       role: 'user',
       content: userMessage
     });
@@ -335,7 +335,7 @@ export const generateOllamaResponse = async (
       },
       body: JSON.stringify({
         model: modelName,
-        messages: messages,
+        messages: formattedMessages,
         stream: false
       }),
     });
