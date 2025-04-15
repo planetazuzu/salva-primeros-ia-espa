@@ -6,10 +6,10 @@ import React from 'react';
  */
 export const formatMessageText = (text: string): JSX.Element[] => {
   return text.split('\n').map((line, i) => (
-    <React.Fragment key={i}>
-      {line}
-      {i < text.split('\n').length - 1 && <br />}
-    </React.Fragment>
+    React.createElement(React.Fragment, { key: i }, 
+      line,
+      i < text.split('\n').length - 1 ? React.createElement('br') : null
+    )
   ));
 };
 
