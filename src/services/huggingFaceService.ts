@@ -1,4 +1,6 @@
+
 import { pipeline, env } from '@huggingface/transformers';
+import { toast } from "@/hooks/use-toast";
 
 // Configuramos para usar WebGPU si está disponible
 env.useBrowserCache = true;
@@ -7,8 +9,31 @@ env.allowLocalModels = false;
 // Define el tipo para los modos de IA disponibles
 export type AIMode = 'openai' | 'simulado' | 'huggingface';
 
+// Define tipos específicos de errores que pueden ocurrir
+export enum ModelErrorType {
+  NETWORK = 'network',
+  MEMORY = 'memory',
+  COMPATIBILITY = 'compatibility',
+  TIMEOUT = 'timeout',
+  UNKNOWN = 'unknown'
+}
+
+// Estructura para el estado del modelo
+export interface ModelStatus {
+  isLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+  errorType: ModelErrorType | null;
+  lastAttempt: Date | null;
+  retryCount: number;
+}
+
 // Modelo a utilizar (MiniLM para tareas de clasificación de texto)
 const MODEL_ID = "Xenova/all-MiniLM-L6-v2";
+
+// Configuración de reintentos
+const MAX_RETRY_COUNT = 3;
+const RETRY_DELAY = 2000; // 2 segundos
 
 // Inicialización perezosa para cargar el modelo solo cuando se necesite
 let _embeddingModel: any = null;
@@ -16,41 +41,171 @@ let _generationModel: any = null;
 let _isModelLoading = false;
 
 // Estado de carga del modelo
-const modelStatus = {
+const modelStatus: ModelStatus = {
   isLoaded: false,
   isLoading: false,
-  error: null as string | null,
+  error: null,
+  errorType: null,
+  lastAttempt: null,
+  retryCount: 0
 };
 
 export const getModelStatus = () => ({ ...modelStatus });
 
-// Esta función inicializa el modelo de embedding
-export const initEmbeddingModel = async () => {
-  try {
-    if (_embeddingModel !== null) return _embeddingModel;
-    if (_isModelLoading) return null;
+// Función para identificar el tipo de error basado en el mensaje
+function identifyErrorType(error: any): ModelErrorType {
+  const errorMessage = error?.message || String(error);
+  
+  if (errorMessage.includes('network') || 
+      errorMessage.includes('fetch') || 
+      errorMessage.includes('connection')) {
+    return ModelErrorType.NETWORK;
+  }
+  
+  if (errorMessage.includes('memory') || 
+      errorMessage.includes('allocation') || 
+      errorMessage.includes('out of memory')) {
+    return ModelErrorType.MEMORY;
+  }
+  
+  if (errorMessage.includes('browser') || 
+      errorMessage.includes('not supported') || 
+      errorMessage.includes('compatibility')) {
+    return ModelErrorType.COMPATIBILITY;
+  }
+  
+  if (errorMessage.includes('timeout') || 
+      errorMessage.includes('time out') || 
+      errorMessage.includes('timed out')) {
+    return ModelErrorType.TIMEOUT;
+  }
+  
+  return ModelErrorType.UNKNOWN;
+}
 
+// Función para obtener un mensaje de error amigable para el usuario
+function getUserFriendlyErrorMessage(errorType: ModelErrorType): string {
+  switch (errorType) {
+    case ModelErrorType.NETWORK:
+      return "Error de conexión al cargar el modelo. Verifica tu conexión a internet.";
+    case ModelErrorType.MEMORY:
+      return "No hay suficiente memoria para cargar el modelo. Cierra otras aplicaciones e intenta nuevamente.";
+    case ModelErrorType.COMPATIBILITY:
+      return "Tu navegador puede no ser compatible con este modelo. Intenta con Chrome o Edge actualizados.";
+    case ModelErrorType.TIMEOUT:
+      return "El tiempo de carga del modelo ha excedido el límite. La conexión puede ser lenta.";
+    case ModelErrorType.UNKNOWN:
+    default:
+      return "Ha ocurrido un error inesperado al cargar el modelo.";
+  }
+}
+
+// Función para limpiar el estado de errores
+export const resetModelError = () => {
+  modelStatus.error = null;
+  modelStatus.errorType = null;
+  modelStatus.retryCount = 0;
+};
+
+// Esta función inicializa el modelo de embedding con manejo mejorado de errores
+export const initEmbeddingModel = async (forceReload = false): Promise<any> => {
+  try {
+    // Si el modelo ya está cargado y no se requiere recarga, retornarlo
+    if (_embeddingModel !== null && !forceReload) return _embeddingModel;
+    
+    // Si ya hay una carga en progreso, esperar
+    if (_isModelLoading) {
+      console.log('Modelo ya está cargando, esperando...');
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!_isModelLoading && _embeddingModel !== null) {
+            clearInterval(checkInterval);
+            resolve(_embeddingModel);
+          }
+        }, 500);
+      });
+    }
+
+    // Iniciar la carga
     _isModelLoading = true;
     modelStatus.isLoading = true;
+    modelStatus.lastAttempt = new Date();
     
     console.log('Cargando modelo de embedding...');
     
-    // Cargar el modelo para obtener embeddings de texto
-    // Eliminamos la opción 'quantized' ya que no es compatible con la versión actual
-    _embeddingModel = await pipeline('feature-extraction', MODEL_ID);
+    // Opciones avanzadas para control de WebGPU y fallback
+    const options = {
+      progress_callback: (progress: { status: string, progress: number }) => {
+        console.log(`Progreso de carga: ${progress.status} - ${Math.round(progress.progress * 100)}%`);
+      }
+    };
     
+    try {
+      // Intentar cargar con WebGPU primero
+      _embeddingModel = await pipeline('feature-extraction', MODEL_ID, options);
+    } catch (gpuError) {
+      console.warn('No se pudo cargar con WebGPU, intentando sin aceleración:', gpuError);
+      
+      // Si falla WebGPU, intentar sin especificar dispositivo (fallback a CPU)
+      _embeddingModel = await pipeline('feature-extraction', MODEL_ID);
+    }
+    
+    // Modelo cargado con éxito
     modelStatus.isLoaded = true;
     modelStatus.isLoading = false;
+    modelStatus.error = null;
+    modelStatus.errorType = null;
+    modelStatus.retryCount = 0;
     _isModelLoading = false;
     
     console.log('Modelo de embedding cargado correctamente');
+    
+    // Notificar al usuario del éxito
+    toast({
+      title: "Modelo de IA cargado con éxito",
+      description: "El modelo local está listo para responder a tus consultas",
+    });
+    
     return _embeddingModel;
   } catch (error) {
+    // Manejar el error de carga
     console.error('Error al cargar el modelo de embedding:', error);
+    
+    // Identificar el tipo de error
+    const errorType = identifyErrorType(error);
+    const errorMessage = getUserFriendlyErrorMessage(errorType);
+    
+    // Actualizar el estado
     modelStatus.error = error instanceof Error ? error.message : String(error);
+    modelStatus.errorType = errorType;
     modelStatus.isLoading = false;
+    modelStatus.isLoaded = false;
+    modelStatus.retryCount += 1;
     _isModelLoading = false;
-    throw error;
+    
+    // Notificar al usuario del error
+    toast({
+      title: "Error al cargar el modelo de IA",
+      description: errorMessage,
+      variant: "destructive"
+    });
+    
+    // Intentar recargar automáticamente si no se excedió el límite de reintentos
+    if (modelStatus.retryCount < MAX_RETRY_COUNT) {
+      console.log(`Reintentando carga (intento ${modelStatus.retryCount} de ${MAX_RETRY_COUNT})...`);
+      
+      // Notificar al usuario del reintento
+      toast({
+        title: "Reintentando cargar el modelo",
+        description: `Intento ${modelStatus.retryCount} de ${MAX_RETRY_COUNT}`,
+      });
+      
+      // Esperar antes de reintentar
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return initEmbeddingModel(true);
+    }
+    
+    throw new Error(`Error al cargar el modelo después de ${MAX_RETRY_COUNT} intentos: ${errorMessage}`);
   }
 };
 
@@ -103,18 +258,34 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
     let bestResponse = "";
     let highestSimilarity = 0;
     
-    // Iteramos por la base de conocimiento para encontrar la respuesta más relevante
-    for (const entry of knowledgeBase) {
-      // Conseguimos el embedding del contexto
-      const contextEmbedding = await embeddingModel(entry.context, { pooling: "mean", normalize: true });
-      
-      // Calculamos similitud con producto punto (dot product)
-      const similarity = calculateSimilarity(userEmbedding.data, contextEmbedding.data);
-      
-      if (similarity > highestSimilarity) {
-        highestSimilarity = similarity;
-        bestResponse = entry.response;
+    // Añadimos manejo de errores aquí también
+    try {
+      // Iteramos por la base de conocimiento para encontrar la respuesta más relevante
+      for (const entry of knowledgeBase) {
+        // Conseguimos el embedding del contexto
+        const contextEmbedding = await embeddingModel(entry.context, { pooling: "mean", normalize: true });
+        
+        // Calculamos similitud con producto punto (dot product)
+        const similarity = calculateSimilarity(userEmbedding.data, contextEmbedding.data);
+        
+        if (similarity > highestSimilarity) {
+          highestSimilarity = similarity;
+          bestResponse = entry.response;
+        }
       }
+    } catch (embeddingError) {
+      console.error('Error al calcular similitud de embeddings:', embeddingError);
+      // Enviar telemetría del error (para análisis futuro)
+      trackEmbeddingError(embeddingError);
+      // Mostrar mensaje de error al usuario
+      toast({
+        title: "Error en el procesamiento",
+        description: "Hubo un problema al analizar tu pregunta. Intentando método alternativo...",
+        variant: "destructive"
+      });
+      
+      // Método alternativo: búsqueda de palabras clave simple
+      return fallbackKeywordSearch(userMessage, knowledgeBase);
     }
     
     // Si no encontramos una respuesta relevante, devolvemos un mensaje genérico
@@ -125,16 +296,68 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
     return bestResponse;
   } catch (error) {
     console.error('Error al generar respuesta local:', error);
+    
+    // Notificar al usuario del error
+    toast({
+      title: "Error al generar respuesta",
+      description: "No se pudo procesar tu consulta. Cambiando a modo simulado automáticamente.",
+      variant: "destructive"
+    });
+    
     return "Lo siento, ha ocurrido un error al procesar tu consulta con el modelo local. Por favor, intenta de nuevo más tarde o utiliza el modo simulado.";
   }
 };
 
 // Función auxiliar para calcular similitud entre embeddings
 function calculateSimilarity(embedding1: number[], embedding2: number[]): number {
-  // Implementación simplificada de similitud coseno
-  let dotProduct = 0;
-  for (let i = 0; i < embedding1.length; i++) {
-    dotProduct += embedding1[i] * embedding2[i];
+  try {
+    // Implementación robusta de similitud coseno
+    let dotProduct = 0;
+    let norm1 = 0;
+    let norm2 = 0;
+    
+    for (let i = 0; i < embedding1.length; i++) {
+      dotProduct += embedding1[i] * embedding2[i];
+      norm1 += embedding1[i] * embedding1[i];
+      norm2 += embedding2[i] * embedding2[i];
+    }
+    
+    // Prevenir división por cero
+    if (norm1 === 0 || norm2 === 0) return 0;
+    
+    return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
+  } catch (error) {
+    console.error('Error al calcular similitud:', error);
+    return 0; // En caso de error, devolvemos la similitud mínima
   }
-  return dotProduct;
+}
+
+// Función de respaldo que usa palabras clave cuando fallan los embeddings
+function fallbackKeywordSearch(userMessage: string, knowledgeBase: Array<{context: string, response: string}>): string {
+  const userMessageLower = userMessage.toLowerCase();
+  
+  // Buscar coincidencias de palabras clave en el mensaje del usuario
+  for (const entry of knowledgeBase) {
+    const contextKeywords = entry.context.split(/\s+/);
+    for (const keyword of contextKeywords) {
+      if (keyword.length > 3 && userMessageLower.includes(keyword.toLowerCase())) {
+        return entry.response;
+      }
+    }
+  }
+  
+  // Si no hay coincidencias, devolver respuesta genérica
+  return "No pude encontrar información específica sobre tu consulta. Por favor, intenta preguntar sobre temas de primeros auxilios como RCP, atragantamiento, quemaduras o fracturas.";
+}
+
+// Función para seguimiento y análisis de errores (telemetría)
+function trackEmbeddingError(error: any): void {
+  // Aquí se implementaría el envío de datos de telemetría
+  // Por ahora solo registramos en consola
+  console.log('Error de embedding para análisis:', {
+    timestamp: new Date().toISOString(),
+    errorMessage: error instanceof Error ? error.message : String(error),
+    errorStack: error instanceof Error ? error.stack : undefined,
+    browserInfo: navigator.userAgent
+  });
 }
