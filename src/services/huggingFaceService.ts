@@ -6,7 +6,7 @@ env.useBrowserCache = true;
 env.allowLocalModels = false;
 
 // Define el tipo para los modos de IA disponibles
-export type AIMode = 'openai' | 'simulado' | 'huggingface' | 'ollama';
+export type AIMode = 'simulado' | 'openai' | 'huggingface' | 'ollama';
 
 // Define tipos específicos de errores que pueden ocurrir
 export enum ModelErrorType {
@@ -308,7 +308,12 @@ export const generateLocalResponse = async (userMessage: string, conversationHis
 };
 
 // Función para generar respuestas utilizando Ollama en un servidor local
-export const generateOllamaResponse = async (userMessage: string, conversationHistory: Array<{sender: string, text: string}>, serverUrl = 'http://localhost:11434'): Promise<string> => {
+export const generateOllamaResponse = async (
+  userMessage: string, 
+  messages: any[], 
+  serverUrl: string,
+  modelName: string = 'mediachat'
+): Promise<string> => {
   try {
     // Preparamos el historial en el formato que espera Ollama
     const messages = conversationHistory.map(msg => ({
@@ -329,7 +334,7 @@ export const generateOllamaResponse = async (userMessage: string, conversationHi
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'mediachat', // Puedes cambiar esto por el nombre de tu modelo
+        model: modelName,
         messages: messages,
         stream: false
       }),

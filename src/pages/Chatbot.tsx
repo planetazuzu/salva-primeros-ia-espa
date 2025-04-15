@@ -1,36 +1,21 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-import { MessageCircle, Send, Plus, ThumbsUp, ThumbsDown, Info, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  AIMode, 
+  AIMode as AIServiceMode, 
   generateLocalResponse, 
   generateOllamaResponse,
   getModelStatus, 
   initEmbeddingModel 
 } from '@/services/huggingFaceService';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-  feedback?: 'like' | 'dislike';
-}
+// Componentes refactorizados
+import CommonQuestions from '@/components/chatbot/CommonQuestions';
+import ChatInterface from '@/components/chatbot/ChatInterface';
+import AIModelSelector from '@/components/chatbot/AIModelSelector';
+import { Message, AIMode, ModelLoadingStatus } from '@/components/chatbot/types';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -41,17 +26,15 @@ const Chatbot = () => {
       timestamp: new Date(),
     },
   ]);
-  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [aiMode, setAiMode] = useState<AIMode>('simulado');
   const [ollamaServerUrl, setOllamaServerUrl] = useState('http://localhost:11434');
   const [ollamaModelName, setOllamaModelName] = useState('mediachat');
-  const [modelLoadingStatus, setModelLoadingStatus] = useState({
+  const [modelLoadingStatus, setModelLoadingStatus] = useState<ModelLoadingStatus>({
     isLoading: false,
     isLoaded: false,
-    error: null as string | null,
+    error: null,
   });
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const commonQuestions = [
@@ -87,7 +70,6 @@ const Chatbot = () => {
     try {
       setModelLoadingStatus({...modelLoadingStatus, isLoading: true});
       
-      // Notificar al usuario que el modelo está cargando
       toast({
         title: "Cargando modelo de IA",
         description: "Esto puede tardar unos momentos la primera vez",
@@ -95,7 +77,6 @@ const Chatbot = () => {
       
       await initEmbeddingModel();
       
-      // Actualizar el estado con el estado del modelo
       const status = getModelStatus();
       setModelLoadingStatus(status);
       
@@ -129,7 +110,6 @@ const Chatbot = () => {
     try {
       setLoading(true);
       
-      // Notificar al usuario que estamos probando la conexión
       toast({
         title: "Probando conexión con Ollama",
         description: "Verificando la conexión con tu servidor local...",
@@ -167,14 +147,6 @@ const Chatbot = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const generateSimulatedResponse = (userMessage: string): Promise<string> => {
@@ -279,7 +251,7 @@ const Chatbot = () => {
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -290,7 +262,6 @@ const Chatbot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setLoading(true);
 
     try {
@@ -304,7 +275,7 @@ const Chatbot = () => {
           response = await generateLocalResponse(input, messages);
           break;
         case 'ollama':
-          response = await generateOllamaResponse(input, messages, ollamaServerUrl);
+          response = await generateOllamaResponse(input, messages, ollamaServerUrl, ollamaModelName);
           break;
         case 'simulado':
         default:
@@ -337,14 +308,7 @@ const Chatbot = () => {
   };
 
   const handleQuickQuestion = (question: string) => {
-    setInput(question);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+    handleSendMessage(question);
   };
 
   const handleFeedback = (messageId: string, type: 'like' | 'dislike') => {
@@ -352,15 +316,6 @@ const Chatbot = () => {
       message.id === messageId 
         ? { ...message, feedback: type } 
         : message
-    ));
-  };
-
-  const formatMessageText = (text: string) => {
-    return text.split('\n').map((line, i) => (
-      <span key={i}>
-        {line}
-        <br />
-      </span>
     ));
   };
 
@@ -388,222 +343,34 @@ const Chatbot = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Consulta tus dudas sobre primeros auxilios y recibe respuestas inmediatas basadas en información médica actualizada.
           </p>
-          <div className="mt-2 flex items-center justify-center gap-2 flex-wrap">
-            <div 
-              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
-                aiMode === 'openai' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800 hover:bg-green-50'
-              }`}
-              onClick={() => handleChangeAIMode('openai')}
-            >
-              <Info className="h-3 w-3 mr-1" />
-              OpenAI (ChatGPT)
-            </div>
-            <div 
-              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
-                aiMode === 'huggingface' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800 hover:bg-blue-50'
-              }`}
-              onClick={() => handleChangeAIMode('huggingface')}
-            >
-              <Info className="h-3 w-3 mr-1" />
-              Modelo Local {modelLoadingStatus.isLoading && "(Cargando...)"}
-            </div>
-            <div 
-              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
-                aiMode === 'ollama' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800 hover:bg-purple-50'
-              }`}
-              onClick={() => handleChangeAIMode('ollama')}
-            >
-              <Info className="h-3 w-3 mr-1" />
-              Ollama (Servidor)
-            </div>
-            <div 
-              className={`px-3 py-1 rounded-full text-xs flex items-center cursor-pointer transition-colors ${
-                aiMode === 'simulado' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800 hover:bg-yellow-50'
-              }`}
-              onClick={() => handleChangeAIMode('simulado')}
-            >
-              <Info className="h-3 w-3 mr-1" />
-              Respuestas Simuladas
-            </div>
-            
-            {aiMode === 'ollama' && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="ml-2">
-                    <Settings className="h-3 w-3 mr-1" />
-                    Configurar Ollama
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Configuración de Ollama</DialogTitle>
-                    <DialogDescription>
-                      Configura la conexión a tu servidor local de Ollama
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="server-url" className="text-right">
-                        URL del servidor
-                      </Label>
-                      <Input
-                        id="server-url"
-                        value={ollamaServerUrl}
-                        onChange={(e) => setOllamaServerUrl(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="model-name" className="text-right">
-                        Nombre del modelo
-                      </Label>
-                      <Input
-                        id="model-name"
-                        value={ollamaModelName}
-                        onChange={(e) => setOllamaModelName(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button onClick={testOllamaConnection}>Probar conexión</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
+          
+          <AIModelSelector 
+            currentMode={aiMode}
+            onChangeMode={handleChangeAIMode}
+            modelLoadingStatus={modelLoadingStatus}
+            testOllamaConnection={testOllamaConnection}
+            ollamaServerUrl={ollamaServerUrl}
+            setOllamaServerUrl={setOllamaServerUrl}
+            ollamaModelName={ollamaModelName}
+            setOllamaModelName={setOllamaModelName}
+          />
         </div>
 
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-1">
-            <div className="auxilio-card p-4">
-              <h2 className="font-semibold text-auxilio-azul mb-3">Preguntas frecuentes</h2>
-              <div className="space-y-2">
-                {commonQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    className="w-full text-left p-2 text-sm rounded-md hover:bg-blue-50 transition-colors"
-                    onClick={() => handleQuickQuestion(question)}
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-500">
-                  <strong>Nota:</strong> Este asistente virtual proporciona información educativa básica y no reemplaza el consejo médico profesional.
-                </p>
-              </div>
-            </div>
+            <CommonQuestions 
+              questions={commonQuestions}
+              onSelectQuestion={handleQuickQuestion}
+            />
           </div>
           
-          <div className="md:col-span-3 flex flex-col h-[600px] auxilio-card p-0 overflow-hidden">
-            <div className="flex-grow overflow-y-auto p-4">
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${
-                      message.sender === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-lg p-3 ${
-                        message.sender === 'user'
-                          ? 'bg-auxilio-azul text-white'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      <div className="whitespace-pre-line">
-                        {formatMessageText(message.text)}
-                      </div>
-                      <div className="mt-1 flex items-center justify-between">
-                        <span className="text-xs opacity-70">
-                          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        {message.sender === 'bot' && (
-                          <div className="flex space-x-2">
-                            <button 
-                              onClick={() => handleFeedback(message.id, 'like')}
-                              className={`p-1 rounded-full ${message.feedback === 'like' ? 'bg-green-100' : 'hover:bg-gray-200'}`}
-                              aria-label="Me gusta"
-                            >
-                              <ThumbsUp className="h-3 w-3 text-gray-600" />
-                            </button>
-                            <button 
-                              onClick={() => handleFeedback(message.id, 'dislike')}
-                              className={`p-1 rounded-full ${message.feedback === 'dislike' ? 'bg-red-100' : 'hover:bg-gray-200'}`}
-                              aria-label="No me gusta"
-                            >
-                              <ThumbsDown className="h-3 w-3 text-gray-600" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[80%] rounded-lg p-3 bg-gray-100">
-                      <div className="flex space-x-2">
-                        <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                        <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-            
-            <div className="border-t border-gray-200 p-4">
-              <div className="flex space-x-2">
-                <button
-                  className="p-2 rounded-full text-gray-500 hover:bg-gray-100"
-                  aria-label="Opciones adicionales"
-                >
-                  <Plus className="h-5 w-5" />
-                </button>
-                <div className="flex-grow relative">
-                  <textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Escribe tu consulta sobre primeros auxilios..."
-                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-auxilio-azul resize-none"
-                    rows={1}
-                  />
-                  <div className="absolute right-2 bottom-2 text-xs text-gray-400">
-                    {input.length > 0 ? 'Enter para enviar' : ''}
-                  </div>
-                </div>
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!input.trim() || loading}
-                  className={`p-2 rounded-full ${
-                    input.trim() && !loading
-                      ? 'bg-auxilio-azul text-white'
-                      : 'bg-gray-200 text-gray-400'
-                  }`}
-                  aria-label="Enviar mensaje"
-                >
-                  <Send className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="mt-2 text-xs text-gray-500 flex items-center">
-                <MessageCircle className="h-3 w-3 mr-1" />
-                <span>
-                  {aiMode === 'huggingface' 
-                    ? 'Utilizando modelo de IA local. Las respuestas se procesan en tu navegador.' 
-                    : aiMode === 'ollama'
-                    ? 'Utilizando tu servidor Ollama local para generar respuestas.' 
-                    : 'La información proporcionada es solo educativa. En emergencias reales, llama a los servicios de emergencia.'}
-                </span>
-              </div>
-            </div>
-          </div>
+          <ChatInterface 
+            messages={messages}
+            loading={loading}
+            aiMode={aiMode}
+            onSendMessage={handleSendMessage}
+            onFeedback={handleFeedback}
+          />
         </div>
       </div>
     </Layout>
