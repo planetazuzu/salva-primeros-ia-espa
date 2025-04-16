@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,7 @@ interface MediaItem {
 }
 
 const MediaLibraryManager = () => {
+  const navigate = useNavigate();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,7 +56,13 @@ const MediaLibraryManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setMediaItems(data || []);
+      
+      const typedData = data?.map(item => ({
+        ...item,
+        type: item.type as MediaType
+      })) || [];
+      
+      setMediaItems(typedData);
     } catch (error) {
       console.error('Error fetching media items:', error);
       toast({
@@ -69,10 +76,8 @@ const MediaLibraryManager = () => {
   };
 
   const filteredItems = mediaItems.filter(item => {
-    // Filter by type
     if (activeTab !== 'all' && item.type !== activeTab) return false;
     
-    // Filter by search term
     if (searchTerm && !(
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
       (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
