@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +28,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from '@/components/ui/pagination';
+import MediaPreviewModal from './MediaPreviewModal';
 
 interface MediaItem {
   id: string;
@@ -58,6 +58,10 @@ const MediaLibraryManager = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 9; // Mostrar 9 elementos por página (3x3 grid)
+
+  // Vista previa modal
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [currentPreviewItem, setCurrentPreviewItem] = useState<MediaItem | null>(null);
 
   useEffect(() => {
     fetchMediaItems();
@@ -314,6 +318,30 @@ const MediaLibraryManager = () => {
     return pages;
   };
 
+  // Funciones para la vista previa modal
+  const openPreviewModal = (item: MediaItem) => {
+    setCurrentPreviewItem(item);
+    setPreviewModalOpen(true);
+  };
+
+  const closePreviewModal = () => {
+    setPreviewModalOpen(false);
+    setCurrentPreviewItem(null);
+  };
+
+  const navigateMediaPreview = (direction: 'prev' | 'next') => {
+    if (!currentPreviewItem) return;
+    
+    const currentIndex = mediaItems.findIndex(item => item.id === currentPreviewItem.id);
+    if (currentIndex === -1) return;
+    
+    if (direction === 'prev' && currentIndex > 0) {
+      setCurrentPreviewItem(mediaItems[currentIndex - 1]);
+    } else if (direction === 'next' && currentIndex < mediaItems.length - 1) {
+      setCurrentPreviewItem(mediaItems[currentIndex + 1]);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -431,11 +459,14 @@ const MediaLibraryManager = () => {
                       {filteredItems.map((item) => (
                         <div
                           key={item.id}
-                          className={`relative border rounded-lg overflow-hidden transition-all ${
+                          className={`relative border rounded-lg overflow-hidden transition-all cursor-pointer ${
                             selectedItems.includes(item.id) ? 'ring-2 ring-auxilio-azul' : ''
                           }`}
                         >
-                          <div className="aspect-video bg-gray-100 relative">
+                          <div 
+                            className="aspect-video bg-gray-100 relative"
+                            onClick={() => openPreviewModal(item)}
+                          >
                             <MediaContent
                               type={item.type}
                               src={item.url || ''}
@@ -444,19 +475,28 @@ const MediaLibraryManager = () => {
                             <div className="absolute top-2 right-2 flex gap-1">
                               <button 
                                 className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                                onClick={() => handleEdit(item)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(item);
+                                }}
                               >
                                 <Edit className="h-4 w-4 text-auxilio-azul" />
                               </button>
                               <button 
                                 className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                                onClick={() => handleDelete(item.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(item.id);
+                                }}
                               >
                                 <Trash className="h-4 w-4 text-auxilio-rojo" />
                               </button>
                               <button 
                                 className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                                onClick={() => toggleSelectItem(item.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleSelectItem(item.id);
+                                }}
                               >
                                 <input 
                                   type="checkbox" 
@@ -541,6 +581,15 @@ const MediaLibraryManager = () => {
           </div>
         )}
       </CardContent>
+
+      {/* Modal de vista previa */}
+      <MediaPreviewModal
+        isOpen={previewModalOpen}
+        onClose={closePreviewModal}
+        currentMedia={currentPreviewItem}
+        mediaItems={mediaItems}
+        onNavigate={navigateMediaPreview}
+      />
     </Card>
   );
 };
