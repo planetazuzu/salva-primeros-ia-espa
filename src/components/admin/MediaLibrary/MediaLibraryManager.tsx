@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import MediaContent from '../../learn/MediaContent';
 import { MediaType } from '../../learn/MediaContent';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious,
+  PaginationEllipsis
+} from '@/components/ui/pagination';
 
 interface MediaItem {
   id: string;
@@ -42,18 +52,58 @@ const MediaLibraryManager = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [editItem, setEditItem] = useState<MediaItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 9; // Mostrar 9 elementos por página (3x3 grid)
 
   useEffect(() => {
     fetchMediaItems();
-  }, []);
+    fetchTotalCount();
+  }, [currentPage, activeTab]);
+
+  const fetchTotalCount = async () => {
+    try {
+      let query = supabase
+        .from('media_library')
+        .select('id', { count: 'exact' });
+      
+      if (activeTab !== 'all') {
+        query = query.eq('type', activeTab);
+      }
+      
+      const { count, error } = await query;
+      
+      if (error) throw error;
+      
+      setTotalItems(count || 0);
+      setTotalPages(Math.ceil((count || 0) / itemsPerPage));
+    } catch (error) {
+      console.error('Error fetching count:', error);
+    }
+  };
 
   const fetchMediaItems = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('media_library')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*');
+        
+      if (activeTab !== 'all') {
+        query = query.eq('type', activeTab);
+      }
+      
+      // Añadir paginación
+      const from = (currentPage - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+      
+      const { data, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
       
@@ -76,8 +126,6 @@ const MediaLibraryManager = () => {
   };
 
   const filteredItems = mediaItems.filter(item => {
-    if (activeTab !== 'all' && item.type !== activeTab) return false;
-    
     if (searchTerm && !(
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
       (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -130,6 +178,9 @@ const MediaLibraryManager = () => {
         title: "Guardado exitoso",
         description: "El medio ha sido actualizado correctamente",
       });
+      
+      // Actualizar la lista después de editar
+      fetchMediaItems();
     } catch (error) {
       console.error('Error updating media item:', error);
       toast({
@@ -165,6 +216,9 @@ const MediaLibraryManager = () => {
         title: "Eliminado exitoso",
         description: "El medio ha sido eliminado correctamente",
       });
+      
+      // Actualizar el contador total después de eliminar
+      fetchTotalCount();
     } catch (error) {
       console.error('Error deleting media item:', error);
       toast({
@@ -197,6 +251,9 @@ const MediaLibraryManager = () => {
         title: "Eliminación masiva exitosa",
         description: `${selectedItems.length} medios han sido eliminados correctamente`,
       });
+      
+      // Actualizar el contador total después de eliminar
+      fetchTotalCount();
     } catch (error) {
       console.error('Error deleting media items:', error);
       toast({
@@ -205,6 +262,56 @@ const MediaLibraryManager = () => {
         variant: "destructive"
       });
     }
+  };
+  
+  const handlePageChange = (page: number) => {
+    // Asegurar que la página esté dentro de los límites válidos
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    
+    setCurrentPage(page);
+    setSelectedItems([]); // Limpiar selección al cambiar de página
+  };
+  
+  // Generar el array de páginas a mostrar
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5; // Mostrar un máximo de 5 páginas a la vez
+    
+    if (totalPages <= maxPagesToShow) {
+      // Si hay pocas páginas, mostrar todas
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Mostrar primero y último, con elipsis en el medio si es necesario
+      let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+      let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+      
+      // Ajustar si estamos cerca del final
+      if (endPage - startPage < maxPagesToShow - 1) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      }
+      
+      // Añadir primera página
+      if (startPage > 1) {
+        pages.push(1);
+        if (startPage > 2) pages.push('ellipsis');
+      }
+      
+      // Añadir páginas del medio
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+      
+      // Añadir última página
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) pages.push('ellipsis');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   return (
@@ -301,7 +408,10 @@ const MediaLibraryManager = () => {
               </Button>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={(value) => {
+              setActiveTab(value);
+              setCurrentPage(1); // Reiniciar a la primera página cuando cambie la pestaña
+            }}>
               <TabsList className="grid grid-cols-4 w-full">
                 <TabsTrigger value="all">Todos</TabsTrigger>
                 <TabsTrigger value="image">Imágenes</TabsTrigger>
@@ -316,64 +426,111 @@ const MediaLibraryManager = () => {
                     <p>Cargando medios...</p>
                   </div>
                 ) : filteredItems.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`relative border rounded-lg overflow-hidden transition-all ${
-                          selectedItems.includes(item.id) ? 'ring-2 ring-auxilio-azul' : ''
-                        }`}
-                      >
-                        <div className="aspect-video bg-gray-100 relative">
-                          <MediaContent
-                            type={item.type}
-                            src={item.url || ''}
-                            alt={item.title}
-                          />
-                          <div className="absolute top-2 right-2 flex gap-1">
-                            <button 
-                              className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                              onClick={() => handleEdit(item)}
-                            >
-                              <Edit className="h-4 w-4 text-auxilio-azul" />
-                            </button>
-                            <button 
-                              className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                              onClick={() => handleDelete(item.id)}
-                            >
-                              <Trash className="h-4 w-4 text-auxilio-rojo" />
-                            </button>
-                            <button 
-                              className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
-                              onClick={() => toggleSelectItem(item.id)}
-                            >
-                              <input 
-                                type="checkbox" 
-                                checked={selectedItems.includes(item.id)} 
-                                readOnly
-                                className="h-4 w-4"
-                              />
-                            </button>
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className={`relative border rounded-lg overflow-hidden transition-all ${
+                            selectedItems.includes(item.id) ? 'ring-2 ring-auxilio-azul' : ''
+                          }`}
+                        >
+                          <div className="aspect-video bg-gray-100 relative">
+                            <MediaContent
+                              type={item.type}
+                              src={item.url || ''}
+                              alt={item.title}
+                            />
+                            <div className="absolute top-2 right-2 flex gap-1">
+                              <button 
+                                className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
+                                onClick={() => handleEdit(item)}
+                              >
+                                <Edit className="h-4 w-4 text-auxilio-azul" />
+                              </button>
+                              <button 
+                                className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
+                                onClick={() => handleDelete(item.id)}
+                              >
+                                <Trash className="h-4 w-4 text-auxilio-rojo" />
+                              </button>
+                              <button 
+                                className="bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100"
+                                onClick={() => toggleSelectItem(item.id)}
+                              >
+                                <input 
+                                  type="checkbox" 
+                                  checked={selectedItems.includes(item.id)} 
+                                  readOnly
+                                  className="h-4 w-4"
+                                />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium text-sm truncate">{item.title}</h3>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {new Date(item.created_at).toLocaleDateString()}
+                            </div>
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {item.tags.slice(0, 3).map((tag, i) => (
+                                  <span key={i} className="text-xs bg-gray-100 px-2 py-0.5 rounded">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="p-3">
-                          <h3 className="font-medium text-sm truncate">{item.title}</h3>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {new Date(item.created_at).toLocaleDateString()}
-                          </div>
-                          {item.tags && item.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {item.tags.slice(0, 3).map((tag, i) => (
-                                <span key={i} className="text-xs bg-gray-100 px-2 py-0.5 rounded">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                      ))}
+                    </div>
+                    
+                    {/* Paginación */}
+                    {totalPages > 1 && (
+                      <div className="mt-6">
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              />
+                            </PaginationItem>
+                            
+                            {getPageNumbers().map((page, index) => (
+                              page === 'ellipsis' ? (
+                                <PaginationItem key={`ellipsis-${index}`}>
+                                  <PaginationEllipsis />
+                                </PaginationItem>
+                              ) : (
+                                <PaginationItem key={page}>
+                                  <PaginationLink
+                                    isActive={page === currentPage}
+                                    onClick={() => handlePageChange(page as number)}
+                                    className="cursor-pointer"
+                                  >
+                                    {page}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              )
+                            ))}
+                            
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                        
+                        <div className="text-center text-sm text-gray-500 mt-2">
+                          Mostrando {filteredItems.length} de {totalItems} medios (Página {currentPage} de {totalPages})
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </>
                 ) : (
                   <div className="text-center py-12">
                     <p className="text-gray-500">No se encontraron medios que coincidan con tu búsqueda</p>
