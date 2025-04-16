@@ -38,7 +38,7 @@ serve(async (req) => {
     const messages = [
       {
         role: 'system',
-        content: 'Eres un asistente virtual especializado en primeros auxilios. Proporciona información clara, concisa y médicamente precisa. Para emergencias graves, siempre recomienda llamar a los servicios de emergencia. No inventes información médica y sé honesto cuando no sepas algo. Responde siempre en español.'
+        content: 'Eres un asistente virtual especializado en primeros auxilios. Proporciona información clara, concisa y médicamente precisa. Para emergencias graves, siempre recomienda llamar a los servicios de emergencia. No inventes información médica y sé honesto cuando no sepas algo. Responde siempre en español. Adapta tus respuestas para que sean relevantes al contexto de la conversación.'
       }
     ];
 
@@ -59,6 +59,7 @@ serve(async (req) => {
     });
 
     console.log('Enviando consulta a OpenAI: ', message);
+    console.log('Historial de conversación: ', JSON.stringify(conversationHistory, null, 2));
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

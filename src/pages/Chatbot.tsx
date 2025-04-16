@@ -5,9 +5,10 @@ import { AIMode } from '@/services/ai/types';
 import { ModelLoadingStatus } from '@/services/ai/types';
 import ChatInterface from '@/components/chatbot/ChatInterface';
 import AIModelSelector from '@/components/chatbot/ModelSelector';
+import CommonQuestions from '@/components/chatbot/CommonQuestions';
 import { initHuggingFaceService, generateLocalResponse } from '@/services/ai/huggingface';
 import { testOllamaConnection, generateOllamaResponse } from '@/services/ai/ollamaService';
-import { generateSimulatedResponse } from '@/services/ai/simulatedService';
+import { generateSimulatedResponse, getFrequentQueriesData } from '@/services/ai/simulatedService';
 import { generateOpenAiResponse } from '@/services/ai/openaiService';
 import { Message } from '@/components/chatbot/types';
 
@@ -22,6 +23,28 @@ const Chatbot = () => {
   });
   const [ollamaServerUrl, setOllamaServerUrl] = useState<string>('http://localhost:11434');
   const [ollamaModelName, setOllamaModelName] = useState<string>('mediachat');
+  const [commonQuestions, setCommonQuestions] = useState<string[]>([
+    "¿Cómo realizar correctamente la RCP?",
+    "¿Qué hacer ante un atragantamiento?",
+    "¿Cómo tratar quemaduras leves?",
+    "¿Cómo detener una hemorragia nasal?",
+    "¿Qué hacer ante una fractura o esguince?"
+  ]);
+
+  // Cargar preguntas frecuentes desde el análisis cuando es posible
+  useEffect(() => {
+    try {
+      const frequentQueries = getFrequentQueriesData();
+      if (frequentQueries && frequentQueries.length > 0) {
+        const newQuestions = frequentQueries.map(item => item.query);
+        if (newQuestions.length >= 3) {
+          setCommonQuestions(newQuestions);
+        }
+      }
+    } catch (e) {
+      console.log("No hay suficientes datos de preguntas frecuentes aún");
+    }
+  }, [messages.length]); // Actualizamos cuando cambia el número de mensajes
 
   const loadHuggingFaceModel = useCallback(async () => {
     try {
@@ -119,7 +142,7 @@ const Chatbot = () => {
         
         case 'simulado':
         default:
-          responseText = await generateSimulatedResponse(message);
+          responseText = await generateSimulatedResponse(message, conversationHistory);
           break;
       }
 
@@ -143,7 +166,10 @@ const Chatbot = () => {
           variant: "destructive"
         });
         
-        const fallbackResponse = await generateSimulatedResponse(message);
+        const fallbackResponse = await generateSimulatedResponse(message, messages.map(msg => ({
+          sender: msg.sender,
+          text: msg.text
+        })));
         
         const fallbackMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -178,6 +204,10 @@ const Chatbot = () => {
   const testOllamaConnectionHandler = async () => {
     await testOllamaConnection(ollamaServerUrl, ollamaModelName);
   };
+  
+  const handleSelectQuestion = (question: string) => {
+    handleSendMessage(question);
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -191,13 +221,25 @@ const Chatbot = () => {
         ollamaModelName={ollamaModelName}
         setOllamaModelName={setOllamaModelName}
       />
-      <ChatInterface 
-        messages={messages}
-        loading={loading}
-        aiMode={aiMode}
-        onSendMessage={handleSendMessage}
-        onFeedback={handleFeedback}
-      />
+      
+      <div className="flex flex-col md:flex-row gap-4 p-4">
+        <div className="md:w-3/4">
+          <ChatInterface 
+            messages={messages}
+            loading={loading}
+            aiMode={aiMode}
+            onSendMessage={handleSendMessage}
+            onFeedback={handleFeedback}
+          />
+        </div>
+        
+        <div className="md:w-1/4">
+          <CommonQuestions 
+            questions={commonQuestions}
+            onSelectQuestion={handleSelectQuestion}
+          />
+        </div>
+      </div>
     </div>
   );
 };
