@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Layout from '../components/layout/Layout';
-import { MediaLibraryManager } from '../components/admin/MediaLibrary';
+import { MediaLibraryManager } from '../components/admin/MediaLibrary/index';
 
 const MediaLibraryPage = () => {
   return (

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Layout from '../components/layout/Layout';
-import { MediaUploadForm } from '../components/admin/MediaLibrary';
+import { MediaUploadForm } from '../components/admin/MediaLibrary/index';
 
 const MediaUploadPage = () => {
   return (
