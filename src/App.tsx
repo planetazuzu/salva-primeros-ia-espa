@@ -20,6 +20,8 @@ import PoliticasPrivacidad from "./pages/PoliticasPrivacidad";
 import AcercaDe from "./pages/AcercaDe";
 import Contacto from "./pages/Contacto";
 import Escenarios from "./pages/Escenarios";
+import MediaLibraryPage from './pages/MediaLibrary';
+import MediaUploadPage from './pages/MediaUpload';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/politicas-privacidad" element={<PoliticasPrivacidad />} />
           <Route path="/acerca-de" element={<AcercaDe />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/admin/media" element={<MediaLibraryPage />} />
+          <Route path="/admin/media/upload" element={<MediaUploadPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
