@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -18,6 +18,20 @@ import { Link } from 'react-router-dom';
 
 const RCPBasico = () => {
   const [videoPlaying, setVideoPlaying] = useState(false);
+  
+  // Script para cargar el player de Vimeo
+  useEffect(() => {
+    if (videoPlaying) {
+      const script = document.createElement('script');
+      script.src = 'https://player.vimeo.com/api/player.js';
+      script.async = true;
+      document.body.appendChild(script);
+      
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
+  }, [videoPlaying]);
 
   return (
     <Layout>
@@ -109,15 +123,15 @@ const RCPBasico = () => {
               <Card className="mb-8 shadow-md overflow-hidden">
                 <div className="aspect-w-16 aspect-h-9 relative bg-gray-100">
                   {videoPlaying ? (
-                    <iframe 
-                      width="100%" 
-                      height="315" 
-                      src="https://www.youtube.com/embed/FEaOPDrGytI?autoplay=1" 
-                      title="Video tutorial RCP" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                      allowFullScreen
-                      className="absolute inset-0 w-full h-full"
-                    ></iframe>
+                    <div style={{padding: '56.25% 0 0 0', position: 'relative'}}>
+                      <iframe 
+                        src="https://player.vimeo.com/video/795240458?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                        frameBorder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                        style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}} 
+                        title="How to Perform Hands-Only CPR"
+                      ></iframe>
+                    </div>
                   ) : (
                     <div 
                       className="absolute inset-0 flex items-center justify-center cursor-pointer"
